@@ -1,9 +1,9 @@
-import { prisma } from '../services/route';
+import { prisma } from '@/prisma.db';
 import { NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
 
 // GET - Get user's vehicles
-export async function GET() {
+export async function GET(_req: Request) {
 	try {
 		const user = await currentUser();
 
@@ -27,12 +27,13 @@ export async function GET() {
 		}
 
 		const vehicles = await prisma.vehicle.findMany({
-			where: { ownerId: user.id },
+			where: { clerkUserId: user.id },
+			orderBy: { createdAt: 'desc' },
 		});
 
 		return NextResponse.json(vehicles);
 	} catch (error) {
-		console.error('Error fetching vehicles:', error);
+		console.error('Error fetching vehicle:', error);
 		return NextResponse.json(
 			{ error: 'Internal Server Error' },
 			{ status: 500 }
@@ -41,7 +42,7 @@ export async function GET() {
 }
 
 // POST - Add a new vehicle
-export async function POST(request: Request) {
+export const POST = async (req: Request) => {
 	try {
 		const user = await currentUser();
 
@@ -49,17 +50,14 @@ export async function POST(request: Request) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
-		const { make, model, year, vin } = await request.json();
-
-		// Validate required fields
+		const { make, model, year, vin } = await req.json();
 		if (!make || !model || !year) {
 			return NextResponse.json(
-				{ error: 'Make, model, and year are required' },
-				{ status: 400 }
+				{ error: 'Vehcile make, model and year is require' },
+				{ status: 404 }
 			);
 		}
 
-		// Create vehicle
 		const vehicle = await prisma.vehicle.create({
 			data: {
 				make,
@@ -67,15 +65,11 @@ export async function POST(request: Request) {
 				year: parseInt(year),
 				vin,
 				clerkUserId: user.id,
+				owner: {
+					connect: { clerkUserId: user.id },
+				},
 			},
 		});
-
 		return NextResponse.json(vehicle);
-	} catch (error) {
-		console.error('Error creating vehicle:', error);
-		return NextResponse.json(
-			{ error: 'Internal Server Error' },
-			{ status: 500 }
-		);
-	}
-}
+	} catch (error) {}
+};

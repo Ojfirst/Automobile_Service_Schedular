@@ -1,5 +1,4 @@
-import { PrismaClient } from '@/generated/prisma/client';
-export const prisma = new PrismaClient();
+import { prisma } from '@/prisma.db';
 
 export const GET = async () => {
 	await new Promise((resolve) => setTimeout(resolve, 1500));
