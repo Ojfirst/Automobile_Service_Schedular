@@ -65,7 +65,7 @@ export default async function Dashboard() {
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Link
-            href="/services"
+            href="/service"
             className="bg-white rounded-lg shadow p-6 hover:shadow-md transition border-l-4 border-blue-500"
           >
             <div className="flex items-center gap-4">
