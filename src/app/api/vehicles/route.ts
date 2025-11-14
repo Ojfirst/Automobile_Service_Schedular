@@ -58,6 +58,20 @@ export const POST = async (req: Request) => {
 			);
 		}
 
+		let dbUser = await prisma.user.findUnique({
+			where: { clerkUserId: user.id },
+		});
+
+		if (!dbUser) {
+			dbUser = await prisma.user.create({
+				data: {
+					clerkUserId: user.id,
+					email: user.emailAddresses[0].emailAddress,
+					name: `${user.firstName} ${user.lastName}`.trim(),
+				},
+			});
+		}
+
 		const vehicle = await prisma.vehicle.create({
 			data: {
 				make,
@@ -71,5 +85,11 @@ export const POST = async (req: Request) => {
 			},
 		});
 		return NextResponse.json(vehicle);
-	} catch (error) {}
+	} catch (error) {
+		console.error('Erro creating vehicle', error);
+		return NextResponse.json(
+			{ error: 'Internal Server Error' },
+			{ status: 500 }
+		);
+	}
 };
