@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
 
 // GET - Get user's vehicles
-export async function GET(_req: Request) {
+export async function GET() {
 	try {
 		const user = await currentUser();
 
@@ -21,7 +21,7 @@ export async function GET(_req: Request) {
 				data: {
 					clerkUserId: user.id,
 					email: user.emailAddresses[0].emailAddress,
-					name: `${user.firstName} ${user.lastName}`.trim(),
+					name: `${user.firstName}`.trim(),
 				},
 			});
 		}
@@ -72,12 +72,14 @@ export const POST = async (req: Request) => {
 			});
 		}
 
+		const vinValid = vin && vin.trim() !== '' ? vin : null;
+
 		const vehicle = await prisma.vehicle.create({
 			data: {
 				make,
 				model,
 				year: parseInt(year),
-				vin,
+				vin: vinValid,
 				clerkUserId: user.id,
 				owner: {
 					connect: { clerkUserId: user.id },

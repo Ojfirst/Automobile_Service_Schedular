@@ -1,6 +1,16 @@
 import { PrismaClient } from '@prisma/client';
 
-export const prisma = new PrismaClient();
+const globalForPrisma = globalThis as unknown as {
+	prisma: PrismaClient | undefined;
+};
+
+export const prisma =
+	globalForPrisma.prisma ??
+	new PrismaClient({
+		log: ['query', 'error', 'warn'],
+	});
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 const seed = async () => {
 	const serviceCount = await prisma.service.count();
@@ -25,7 +35,32 @@ const seed = async () => {
 					duration: 60,
 					price: 39.99,
 				},
+				{
+					name: 'Brake Inspection',
+					description: 'Complete brake system inspection',
+					duration: 60,
+					price: 39.99,
+				},
+				{
+					name: 'Full Synthetic Oil Change',
+					description: 'Premium synthetic oil and filter change',
+					duration: 30,
+					price: 79.99,
+				},
+				{
+					name: 'Battery Replacement',
+					description: 'Battery testing and replacement',
+					duration: 45,
+					price: 129.99,
+				},
+				{
+					name: 'Air Filter Replacement',
+					description: 'Engine and cabin air filter replacement',
+					duration: 30,
+					price: 39.99,
+				},
 			],
+			skipDuplicates: true,
 		});
 	}
 };

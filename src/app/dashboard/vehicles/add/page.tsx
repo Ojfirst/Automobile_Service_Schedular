@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { carBrands } from '@/app/_lib/utils/help';
 
 export default function AddVehiclePage() {
   const router = useRouter()
@@ -16,8 +17,9 @@ export default function AddVehiclePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
+    setIsLoading(true);
 
+    console.log(formData);
     try {
       const response = await fetch('/api/vehicles', {
         method: 'POST',
@@ -80,16 +82,20 @@ export default function AddVehiclePage() {
                 <label htmlFor="make" className="block text-sm font-medium text-gray-700 mb-2">
                   Make *
                 </label>
-                <input
-                  type="text"
+                <select
+                  name='make'
                   id="make"
-                  name="make"
                   value={formData.make}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="e.g., Toyota, Honda, Ford"
-                />
+                  className="w-full px-3 py-2 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                  <option value=''>Select a make</option>
+                  {carBrands.map((brand) => (
+                    <option key={brand} value={brand}>
+                      {brand}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {/* Model */}
