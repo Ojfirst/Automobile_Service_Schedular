@@ -1,6 +1,8 @@
-import { prisma } from '@/prisma.db';
+import { PrismaClient } from '@prisma/client';
 
-const seed = async () => {
+const prisma = new PrismaClient();
+
+export const seed = async () => {
 	const serviceCount = await prisma.service.count();
 	if (serviceCount === 0) {
 		await prisma.service.createMany({
@@ -53,8 +55,9 @@ const seed = async () => {
 	}
 };
 
-seed().then(() => prisma.$disconnect());
-
-export const generateService = async () => {
-	return prisma.service.findMany();
-};
+seed()
+	.then(() => prisma.$disconnect())
+	.catch((e) => {
+		console.error(e);
+		prisma.$disconnect();
+	});
