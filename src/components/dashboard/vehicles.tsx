@@ -1,10 +1,9 @@
 import { prisma } from "@/prisma.db";
-import { currentUser } from "@clerk/nextjs/server";
+import type { currentUser } from '@clerk/nextjs/server'
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-const VehiclesDB = async () => {
-  const user = await currentUser();
+const VehiclesDB = async ({ user }: { user: Awaited<ReturnType<typeof currentUser>> }) => {
 
   if (!user) {
     redirect('/sign-in')
@@ -14,7 +13,6 @@ const VehiclesDB = async () => {
     where: { clerkUserId: user.id },
     orderBy: { createdAt: 'desc' }
   })
-
 
   return <div className="p-6">
     {vehicles.length === 0 ? (
