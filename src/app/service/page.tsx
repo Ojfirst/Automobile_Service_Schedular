@@ -1,8 +1,8 @@
 // import { generateService } from "@/prisma.db";
 import Link from "next/link";
-import DashboardNavigation from "@/components/dashboard-navigation";
 import { currentUser } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
+import ServicePageNavigation from "@/components/Navigations/dashboard-navigation";
 
 type Service = {
   id: string,
@@ -28,7 +28,7 @@ const ServicePage = async () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <DashboardNavigation />
+      <ServicePageNavigation />
       {/* Content */}
       <div className="min-h-screen bg-gray-50">
         <div className="container mx-auto px-4 py-8">

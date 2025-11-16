@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { currentUser } from "@clerk/nextjs/server"
 
-const DashboardNavigation = async () => {
+const ServicePageNavigation = async () => {
   const user = await currentUser();
 
   return (
@@ -29,5 +29,5 @@ const DashboardNavigation = async () => {
   )
 }
 
-export default DashboardNavigation;
+export default ServicePageNavigation;
 
