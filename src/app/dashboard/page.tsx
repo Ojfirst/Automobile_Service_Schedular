@@ -6,6 +6,8 @@ import AddVehcileLink from '@/components/dashboard/add-vehicle.link'
 import Appointments from '@/components/dashboard/appointments'
 import VehicleStats from '@/components/dashboard/vehicle-statistic';
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import Loading from '../_lib/utils/loading';
 
 
 export default async function Dashboard() {
@@ -14,7 +16,6 @@ export default async function Dashboard() {
   if (!user) {
     redirect('/sign-in')
   }
-
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -29,15 +30,21 @@ export default async function Dashboard() {
           {/* My Vehicles Section */}
           <div className="bg-white rounded-lg shadow">
             <AddVehcileLink />
-            <VehiclesDB user={user} />
+            <Suspense fallback={<Loading />}>
+              <VehiclesDB user={user} />
+            </Suspense>
           </div>
 
           {/* Upcoming Appointments Section */}
-          <Appointments user={user} />
+          <Suspense fallback={<Loading />}>
+            <Appointments user={user} />
+          </Suspense>
         </div>
 
         {/* Stats Section */}
-        <VehicleStats />
+        <Suspense fallback={<div className='text-2xl flex justify-center items-center'>Loading vehicle statistics...</div>}>
+          <VehicleStats />
+        </Suspense>
       </main>
     </div>
   )

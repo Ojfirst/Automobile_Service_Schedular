@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 
 const VehiclesDB = async ({ user }: { user: Awaited<ReturnType<typeof currentUser>> }) => {
 
+  await new Promise((resolve) => setTimeout(resolve, 4000)); // Simulate delay
+
   if (!user) {
     redirect('/sign-in')
   }
