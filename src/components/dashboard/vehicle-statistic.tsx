@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 
 
 const VehicleStats = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 4000)); // Simulate delay
   const user = await currentUser();
 
   if (!user) {

@@ -39,7 +39,7 @@ const DashboardActions = () => {
     </Link>
 
     <Link
-      href="/services"
+      href="/service"
       className="bg-white rounded-lg shadow p-6 hover:shadow-md transition border-l-4 border-purple-500"
     >
       <div className="flex items-center gap-4">
