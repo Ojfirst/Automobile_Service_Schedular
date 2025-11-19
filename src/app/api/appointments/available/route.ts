@@ -8,7 +8,7 @@ const GET = async (req: Request) => {
 		const date = searchParams.get('date');
 		const serviceId = searchParams.get('serviceId');
 
-		console.log('🔍 Available slots request for date:', date);
+		console.log('Available slots request for date:', date);
 
 		if (!date) {
 			return NextResponse.json({ error: 'Date is required' }, { status: 400 });
@@ -17,11 +17,11 @@ const GET = async (req: Request) => {
 		const selectedDate = new Date(date);
 		const dayOfWeek = selectedDate.getDay(); // 0 = sunday, 1 = monday, etc.
 
-		console.log('📅 Day of week:', dayOfWeek);
+		console.log('Day of week:', dayOfWeek);
 
 		// Service center hours: Mon - Friday, 9AM - 5PM
 		if (dayOfWeek === 0 || dayOfWeek === 6) {
-			console.log('❌ Weekend - no slots available');
+			console.log('Weekend - no slots available');
 			return NextResponse.json({ availableSlots: [] });
 		}
 
@@ -51,7 +51,7 @@ const GET = async (req: Request) => {
 		endOfDay.setHours(23, 59, 59, 999);
 
 		console.log(
-			'📊 Looking for appointments between:',
+			'Looking for appointments between:',
 			startOfDay,
 			'and',
 			endOfDay
@@ -72,14 +72,14 @@ const GET = async (req: Request) => {
 			},
 		});
 
-		console.log('📋 Found existing appointments:', existingAppointments.length);
+		console.log('Found existing appointments:', existingAppointments.length);
 
 		// Convert to Set for faster lookup - use ISO strings for exact comparison
 		const bookedSlots = new Set(
 			existingAppointments.map((apt) => new Date(apt.date).toISOString())
 		);
 
-		console.log('🚫 Booked slots:', Array.from(bookedSlots));
+		console.log('Booked slots:', Array.from(bookedSlots));
 
 		// Generate available slots - SIMPLIFIED APPROACH
 		for (let hour = startHour; hour < endHour; hour++) {
@@ -116,12 +116,12 @@ const GET = async (req: Request) => {
 			}
 		}
 
-		console.log('✅ Generated available slots:', availableSlots.length);
-		console.log('🕒 Available slots:', availableSlots);
+		console.log('Generated available slots:', availableSlots.length);
+		console.log('Available slots:', availableSlots);
 
 		return NextResponse.json({ availableSlots });
 	} catch (error) {
-		console.error('❌ Error fetching available slots:', error);
+		console.error('Error fetching available slots:', error);
 		return NextResponse.json(
 			{ error: 'Internal Server Error' },
 			{ status: 500 }

@@ -337,9 +337,9 @@ export default function BookPage() {
                         <button
                           key={slot.time}
                           onClick={() => handleTimeSelect(slot.datetime, slot.time)}
-                          className="p-4 border-2 border-gray-200 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition text-center"
+                          className="p-4 bg-gray-700 border-2 border-gray-500 rounded-lg hover:border-gray-700 hover:bg-gray-900 transition text-center"
                         >
-                          <span className="font-semibold text-gray-900">{slot.displayTime}</span>
+                          <span className="font-semibold text-gray-300">{slot.displayTime}</span>
                         </button>
                       ))}
                     </div>
@@ -351,11 +351,11 @@ export default function BookPage() {
 
           {/* Step 4: Confirmation */}
           {step === 4 && (
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-gray-900 rounded-lg shadow p-6">
               <div className="flex items-center gap-4 mb-6">
                 <button
                   onClick={() => setStep(3)}
-                  className="text-gray-600 hover:text-gray-900"
+                  className="text-blue-300 hover:text-gray-900"
                 >
                   ← Back
                 </button>
@@ -363,32 +363,32 @@ export default function BookPage() {
               </div>
 
               {/* Appointment Summary */}
-              <div className="bg-gray-50 rounded-lg p-6 mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Appointment Summary</h3>
+              <div className="bg-gray-800 rounded-lg p-6 mb-6">
+                <h3 className="text-lg font-semibold text-gray-400 mb-4">Appointment Summary</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Service:</span>
+                    <span className="text-gray-300">Service:</span>
                     <span className="font-semibold">{selectedService?.name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Vehicle:</span>
+                    <span className="text-gray-300">Vehicle:</span>
                     <span className="font-semibold">
                       {selectedVehicle?.year} {selectedVehicle?.make} {selectedVehicle?.model}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Date & Time:</span>
+                    <span className="text-gray-300">Date & Time:</span>
                     <span className="font-semibold">
                       {new Date(formData.date).toLocaleDateString()} at {formData.time}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Duration:</span>
+                    <span className="text-gray-300">Duration:</span>
                     <span className="font-semibold">{selectedService?.duration} minutes</span>
                   </div>
                   <div className="flex justify-between border-t pt-3 mt-3">
-                    <span className="text-gray-600">Total:</span>
-                    <span className="text-xl font-bold text-gray-900">${selectedService?.price}</span>
+                    <span className="text-gray-100">Total:</span>
+                    <span className="text-xl font-bold text-green-500">${selectedService?.price}</span>
                   </div>
                 </div>
               </div>
@@ -396,13 +396,13 @@ export default function BookPage() {
               {/* Booking Form */}
               <form onSubmit={handleSubmit}>
                 <div className="mb-6">
-                  <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="notes" className="block text-sm font-medium text-gray-400 mb-2">
                     Additional Notes (Optional)
                   </label>
                   <textarea
                     id="notes"
                     rows={4}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                     placeholder="Any special requests or information about your vehicle..."
                   />
                 </div>
