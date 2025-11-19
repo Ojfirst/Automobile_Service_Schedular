@@ -95,7 +95,7 @@ const POST = async (req: Request) => {
 				status: { in: ['PENDING', 'CONFIRMED'] },
 			},
 		});
-		if (!existingAppointment) {
+		if (existingAppointment) {
 			return NextResponse.json(
 				{
 					error: 'The time slot is already booked. Kindly choose another time',

@@ -16,8 +16,8 @@ const BookingNavigation = () => {
           </svg>
           Back to Dashboard
         </Link>
-        <h1 className="text-3xl font-bold text-blue-200">Book Service Appointment</h1>
-        <p className="text-gray-50 mt-2">Schedule your vehicle service in a few easy steps</p>
+        <h1 className="text-3xl font-bold text-blue-200">Schedule Service Appointment</h1>
+        <p className="text-gray-300 mt-2">Schedule your vehicle service in a few easy steps</p>
       </div>
     </header>
   )

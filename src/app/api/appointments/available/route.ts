@@ -8,6 +8,8 @@ const GET = async (req: Request) => {
 		const date = searchParams.get('date');
 		const serviceId = searchParams.get('serviceId');
 
+		console.log('🔍 Available slots request for date:', date);
+
 		if (!date) {
 			return NextResponse.json({ error: 'Date is required' }, { status: 400 });
 		}
@@ -15,8 +17,11 @@ const GET = async (req: Request) => {
 		const selectedDate = new Date(date);
 		const dayOfWeek = selectedDate.getDay(); // 0 = sunday, 1 = monday, etc.
 
-		// Service center hours: Mon -riday, 9AM - 5PM
+		console.log('📅 Day of week:', dayOfWeek);
+
+		// Service center hours: Mon - Friday, 9AM - 5PM
 		if (dayOfWeek === 0 || dayOfWeek === 6) {
+			console.log('❌ Weekend - no slots available');
 			return NextResponse.json({ availableSlots: [] });
 		}
 
@@ -29,22 +34,28 @@ const GET = async (req: Request) => {
 
 			if (service) {
 				serviceDuration = service.duration;
+				console.log('⏱️ Service duration:', serviceDuration);
 			}
 		}
 
-		// Generate time slots (9am - 5pm, accounting for service duration)
+		// Generate time slots (9am - 5pm)
 		const startHour = 9;
 		const endHour = 17;
-		const slotDuration = serviceDuration;
 		const availableSlots = [];
 
 		// Get existing appointments for the selected date
-
 		const startOfDay = new Date(selectedDate);
 		startOfDay.setHours(0, 0, 0, 0);
 
 		const endOfDay = new Date(selectedDate);
 		endOfDay.setHours(23, 59, 59, 999);
+
+		console.log(
+			'📊 Looking for appointments between:',
+			startOfDay,
+			'and',
+			endOfDay
+		);
 
 		const existingAppointments = await prisma.appointment.findMany({
 			where: {
@@ -52,34 +63,46 @@ const GET = async (req: Request) => {
 					gte: startOfDay,
 					lte: endOfDay,
 				},
+				status: {
+					in: ['PENDING', 'CONFIRMED'],
+				},
 			},
 			select: {
 				date: true,
 			},
 		});
 
-		// Convert to Set for faster lookup
+		console.log('📋 Found existing appointments:', existingAppointments.length);
+
+		// Convert to Set for faster lookup - use ISO strings for exact comparison
 		const bookedSlots = new Set(
-			existingAppointments.map((apt) =>
-				new Date(apt.date).toTimeString().slice(0, 5)
-			)
+			existingAppointments.map((apt) => new Date(apt.date).toISOString())
 		);
 
-		// Generate available slots
+		console.log('🚫 Booked slots:', Array.from(bookedSlots));
+
+		// Generate available slots - SIMPLIFIED APPROACH
 		for (let hour = startHour; hour < endHour; hour++) {
-			for (let minute = 0; minute < 60; minute += slotDuration) {
-				if (hour === endHour - 1 && minute + slotDuration > 60) {
-					continue; // Skip slots that would go past closing time
+			// Generate slots every 30 minutes for better availability
+			for (let minute = 0; minute < 60; minute += 30) {
+				// Skip if this would go past closing time
+				if (hour === endHour - 1 && minute >= 30) {
+					continue;
 				}
+
+				const slotDateTime = new Date(selectedDate);
+				slotDateTime.setHours(hour, minute, 0, 0);
 
 				const timeString = `${hour.toString().padStart(2, '0')}:${minute
 					.toString()
 					.padStart(2, '0')}`;
-				const slotDateTime = new Date(selectedDate);
-				slotDateTime.setHours(hour, minute, 0, 0);
 
-				// Only include future time slots
-				if (slotDateTime > new Date() && !bookedSlots.has(timeString)) {
+				// Only include future time slots and check if not booked
+				const now = new Date();
+				if (
+					slotDateTime > now &&
+					!bookedSlots.has(slotDateTime.toISOString())
+				) {
 					availableSlots.push({
 						time: timeString,
 						datetime: slotDateTime.toISOString(),
@@ -93,9 +116,12 @@ const GET = async (req: Request) => {
 			}
 		}
 
+		console.log('✅ Generated available slots:', availableSlots.length);
+		console.log('🕒 Available slots:', availableSlots);
+
 		return NextResponse.json({ availableSlots });
 	} catch (error) {
-		console.error('Error fetching available slots:', error);
+		console.error('❌ Error fetching available slots:', error);
 		return NextResponse.json(
 			{ error: 'Internal Server Error' },
 			{ status: 500 }

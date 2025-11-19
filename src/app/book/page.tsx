@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useUser } from '@clerk/nextjs'
 import BookingNavigation from '@/components/booking/navigation'
+import Loading from '../_lib/utils/loading'
 
 interface Service {
   id: string
@@ -162,12 +163,7 @@ export default function BookPage() {
       <div className="min-h-screen bg-black text-white">
         {/*Header*/}
         <BookingNavigation />
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading...</p>
-          </div>
-        </div>
+        <Loading />
       </div>
     )
   }
@@ -196,7 +192,7 @@ export default function BookPage() {
               </div>
             ))}
           </div>
-          <div className="flex justify-between mt-2 text-sm text-gray-600">
+          <div className="flex justify-between mt-2 text-sm text-gray-400">
             <span>Service</span>
             <span>Vehicle</span>
             <span>Date & Time</span>
@@ -207,25 +203,25 @@ export default function BookPage() {
         <div className="max-w-4xl mx-auto">
           {/* Step 1: Service Selection */}
           {step === 1 && (
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-gray-900 rounded-lg shadow p-6">
               <h2 className="text-2xl font-semibold mb-6">Select Service</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {services.map((service) => (
                   <button
                     key={service.id}
                     onClick={() => handleServiceSelect(service.id)}
-                    className="text-left p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition"
+                    className="text-left p-6 border-3 border-gray-600 shadow-2xl rounded-lg hover:border-gray-700 hover:bg-gray-800 transition"
                   >
                     <div className="flex justify-between items-start mb-3">
-                      <h3 className="text-lg font-semibold text-gray-900">{service.name}</h3>
-                      <span className="bg-blue-100 text-blue-800 text-sm font-semibold px-2 py-1 rounded">
+                      <h3 className="text-lg font-semibold text-gray-400">{service.name}</h3>
+                      <span className="bg-blue-800 text-blue-100 text-sm font-semibold px-2 py-1 rounded">
                         {service.duration} min
                       </span>
                     </div>
-                    <p className="text-gray-600 mb-4">{service.description}</p>
+                    <p className="text-gray-200 mb-4">{service.description}</p>
                     <div className="flex justify-between items-center">
-                      <span className="text-2xl font-bold text-gray-900">${service.price}</span>
-                      <span className="text-blue-600 font-semibold">Select →</span>
+                      <span className="text-2xl font-bold text-gray-100">${service.price}</span>
+                      <span className="text-blue-300 font-semibold">Select →</span>
                     </div>
                   </button>
                 ))}
@@ -235,11 +231,11 @@ export default function BookPage() {
 
           {/* Step 2: Vehicle Selection */}
           {step === 2 && (
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-gray-900 rounded-lg shadow p-6">
               <div className="flex items-center gap-4 mb-6">
                 <button
                   onClick={() => setStep(1)}
-                  className="text-gray-600 hover:text-gray-900"
+                  className="text-blue-300 hover:text-blue-500"
                 >
                   ← Back
                 </button>
@@ -266,17 +262,17 @@ export default function BookPage() {
                     <button
                       key={vehicle.id}
                       onClick={() => handleVehicleSelect(vehicle.id)}
-                      className="text-left p-6 border-2 border-gray-200 rounded-lg hover:border-green-500 hover:bg-green-50 transition"
+                      className="text-left p-6 border-2 border-gray-600 rounded-lg hover:border-gray-700 hover:bg-gray-800 transition"
                     >
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      <h3 className="text-lg font-semibold text-gray-200 mb-2">
                         {vehicle.year} {vehicle.make} {vehicle.model}
                       </h3>
-                      <p className="text-gray-600 mb-4">
+                      <p className="text-gray-400 mb-4">
                         VIN: {vehicle.vin || 'Not provided'}
                       </p>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-900">Select this vehicle</span>
-                        <span className="text-green-600 font-semibold">Select →</span>
+                        <span className="text-gray-3300">Select this vehicle</span>
+                        <span className="text-blue-300 font-semibold">Select →</span>
                       </div>
                     </button>
                   ))}
@@ -287,15 +283,15 @@ export default function BookPage() {
 
           {/* Step 3: Date & Time Selection */}
           {step === 3 && (
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-gray-800 rounded-lg shadow p-6">
               <div className="flex items-center gap-4 mb-6">
                 <button
                   onClick={() => setStep(2)}
-                  className="text-gray-600 hover:text-gray-900"
+                  className="text-blue-300 hover:text-blue-500"
                 >
                   ← Back
                 </button>
-                <h2 className="text-2xl font-semibold">Select Date & Time</h2>
+                <h2 className="text-2xl text-gray-300 font-semibold">Select Date & Time</h2>
               </div>
 
               {/* Selected Service & Vehicle Preview */}
@@ -303,18 +299,18 @@ export default function BookPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <h4 className="font-semibold text-gray-900">Service</h4>
-                    <p className="text-gray-600">{selectedService?.name} - ${selectedService?.price}</p>
+                    <p className="text-gray-800">{selectedService?.name} - ${selectedService?.price}</p>
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900">Vehicle</h4>
-                    <p className="text-gray-600">{selectedVehicle?.year} {selectedVehicle?.make} {selectedVehicle?.model}</p>
+                    <p className="text-gray-800">{selectedVehicle?.year} {selectedVehicle?.make} {selectedVehicle?.model}</p>
                   </div>
                 </div>
               </div>
 
               {/* Date Selection */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-3">
+                <label className="block text-sm font-medium text-gray-200 mb-3">
                   Select Date
                 </label>
                 <input
@@ -328,11 +324,11 @@ export default function BookPage() {
               {/* Time Slots */}
               {selectedDate && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                  <label className="block text-sm font-medium text-gray-400 mb-3">
                     Available Time Slots
                   </label>
                   {availableSlots.length === 0 ? (
-                    <div className="text-center py-8 text-gray-600">
+                    <div className="text-center py-8 text-gray-200">
                       No available time slots for this date. Please select another date.
                     </div>
                   ) : (
