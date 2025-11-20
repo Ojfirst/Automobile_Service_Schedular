@@ -18,7 +18,7 @@ export default async function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-black">
       {/* Header */}
       <DashBardNav />
 
@@ -28,7 +28,7 @@ export default async function Dashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* My Vehicles Section */}
-          <div className="bg-white rounded-lg shadow">
+          <div className="bg-gray-800 rounded-lg shadow">
             <AddVehcileLink />
             <Suspense fallback={<Loading />}>
               <VehiclesDB user={user} />

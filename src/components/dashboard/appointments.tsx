@@ -26,9 +26,9 @@ const Appointments = async ({ user }: { user: Awaited<ReturnType<typeof currentU
 
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="px-6 py-4 border-b border-gray-200">
-        <h2 className="text-xl font-semibold text-gray-900">Upcoming Appointments</h2>
+    <div className="bg-gray-900 rounded-lg shadow">
+      <div className="px-6 py-4 rounded-t-2xl border-b bg-gray-800 border-gray-700">
+        <h2 className="text-xl font-semibold text-gray-400">Upcoming Appointments</h2>
       </div>
 
       <div className="p-6">
@@ -43,9 +43,9 @@ const Appointments = async ({ user }: { user: Awaited<ReturnType<typeof currentU
         ) : (
           <div className="space-y-4">
             {appointments.map((appointment) => (
-              <div key={appointment.id} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+              <div key={appointment.id} className="p-4 border bg-gray-950 border-gray-800 rounded-lg hover:bg-gray-800 transition">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-semibold text-gray-900">{appointment.service.name}</h3>
+                  <h3 className="font-semibold text-gray-200">{appointment.service.name}</h3>
                   <span className={`px-2 py-1 text-xs rounded-full ${appointment.status === 'CONFIRMED' ? 'bg-green-100 text-green-800' :
                     appointment.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
                       appointment.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-800' :
@@ -54,14 +54,14 @@ const Appointments = async ({ user }: { user: Awaited<ReturnType<typeof currentU
                     {appointment.status}
                   </span>
                 </div>
-                <p className="text-sm text-gray-600 mb-2">
+                <p className="text-sm text-gray-400 mb-2">
                   {appointment.vehicle.year} {appointment.vehicle.make} {appointment.vehicle.model}
                 </p>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-400">
                   {new Date(appointment.date).toLocaleDateString()} at {' '}
                   {new Date(appointment.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </p>
-                <p className="text-sm font-semibold text-gray-900 mt-2">
+                <p className="text-sm font-semibold text-green-500 mt-2">
                   ${appointment.service.price}
                 </p>
               </div>
