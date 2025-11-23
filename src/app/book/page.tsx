@@ -6,7 +6,8 @@ import Link from 'next/link'
 import { useUser } from '@clerk/nextjs'
 import BookingNavigation from '@/components/booking/navigation'
 import Loading from '../_lib/utils/loading'
-import SelectService from '@/components/booking/select-service'
+import SelectService from '@/components/booking/select-service';
+import SelectVehicles from '@/components/booking/select-vehicles';
 
 export interface Service {
   id: string
@@ -16,7 +17,7 @@ export interface Service {
   price: number
 }
 
-interface Vehicle {
+export interface Vehicle {
   id: string
   make: string
   model: string
@@ -204,34 +205,10 @@ export default function BookPage() {
         <div className="max-w-4xl mx-auto">
           {/* Step 1: Service Selection */}
           <SelectService services={services} step={step} onServiceSelect={handleServiceSelect} />
-          {step === 1 && (
-            <div className="bg-gray-900 rounded-lg shadow p-6">
-              <h2 className="text-2xl font-semibold mb-6">Select Service</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {services.map((service) => (
-                  <button
-                    key={service.id}
-                    onClick={() => handleServiceSelect(service.id)}
-                    className="text-left p-6 border-3 border-gray-600 shadow-2xl rounded-lg hover:border-gray-700 hover:bg-gray-800 transition"
-                  >
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="text-lg font-semibold text-gray-400">{service.name}</h3>
-                      <span className="bg-blue-800 text-blue-100 text-sm font-semibold px-2 py-1 rounded">
-                        {service.duration} min
-                      </span>
-                    </div>
-                    <p className="text-gray-200 mb-4">{service.description}</p>
-                    <div className="flex justify-between items-center">
-                      <span className="text-2xl font-bold text-gray-100">${service.price}</span>
-                      <span className="text-blue-300 font-semibold">Select →</span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+
 
           {/* Step 2: Vehicle Selection */}
+          <SelectVehicles vehicles={vehicles} step={step} onVehicleSelect={handleVehicleSelect} setStep={setStep} />
           {step === 2 && (
             <div className="bg-gray-900 rounded-lg shadow p-6">
               <div className="flex items-center gap-4 mb-6">
