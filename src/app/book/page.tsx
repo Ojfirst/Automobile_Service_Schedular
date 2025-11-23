@@ -6,8 +6,9 @@ import Link from 'next/link'
 import { useUser } from '@clerk/nextjs'
 import BookingNavigation from '@/components/booking/navigation'
 import Loading from '../_lib/utils/loading'
+import SelectService from '@/components/booking/select-service'
 
-interface Service {
+export interface Service {
   id: string
   name: string
   description: string
@@ -202,6 +203,7 @@ export default function BookPage() {
 
         <div className="max-w-4xl mx-auto">
           {/* Step 1: Service Selection */}
+          <SelectService services={services} step={step} onServiceSelect={handleServiceSelect} />
           {step === 1 && (
             <div className="bg-gray-900 rounded-lg shadow p-6">
               <h2 className="text-2xl font-semibold mb-6">Select Service</h2>
