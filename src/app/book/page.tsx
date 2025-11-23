@@ -8,6 +8,7 @@ import BookingNavigation from '@/components/booking/navigation'
 import Loading from '../_lib/utils/loading'
 import SelectService from '@/components/booking/select-service';
 import SelectVehicles from '@/components/booking/select-vehicles';
+import SelectDateAndTime from '@/components/booking/select-dateAndTime'
 
 export interface Service {
   id: string
@@ -25,7 +26,7 @@ export interface Vehicle {
   vin?: string
 }
 
-interface TimeSlot {
+export interface TimeSlot {
   time: string
   datetime: string
   displayTime: string
@@ -209,124 +210,11 @@ export default function BookPage() {
 
           {/* Step 2: Vehicle Selection */}
           <SelectVehicles vehicles={vehicles} step={step} onVehicleSelect={handleVehicleSelect} setStep={setStep} />
-          {step === 2 && (
-            <div className="bg-gray-900 rounded-lg shadow p-6">
-              <div className="flex items-center gap-4 mb-6">
-                <button
-                  onClick={() => setStep(1)}
-                  className="text-blue-300 hover:text-blue-500"
-                >
-                  ← Back
-                </button>
-                <h2 className="text-2xl font-semibold">Select Vehicle</h2>
-              </div>
 
-              {vehicles.length === 0 ? (
-                <div className="text-center py-8">
-                  <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
-                  </svg>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No vehicles found</h3>
-                  <p className="text-gray-600 mb-6">You need to add a vehicle before booking a service.</p>
-                  <Link
-                    href="/dashboard/vehicles/add"
-                    className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
-                  >
-                    Add Vehicle
-                  </Link>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {vehicles.map((vehicle) => (
-                    <button
-                      key={vehicle.id}
-                      onClick={() => handleVehicleSelect(vehicle.id)}
-                      className="text-left p-6 border-2 border-gray-600 rounded-lg hover:border-gray-700 hover:bg-gray-800 transition"
-                    >
-                      <h3 className="text-lg font-semibold text-gray-200 mb-2">
-                        {vehicle.year} {vehicle.make} {vehicle.model}
-                      </h3>
-                      <p className="text-gray-400 mb-4">
-                        VIN: {vehicle.vin || 'Not provided'}
-                      </p>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-3300">Select this vehicle</span>
-                        <span className="text-blue-300 font-semibold">Select →</span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
 
           {/* Step 3: Date & Time Selection */}
-          {step === 3 && (
-            <div className="bg-gray-800 rounded-lg shadow p-6">
-              <div className="flex items-center gap-4 mb-6">
-                <button
-                  onClick={() => setStep(2)}
-                  className="text-blue-300 hover:text-blue-500"
-                >
-                  ← Back
-                </button>
-                <h2 className="text-2xl text-gray-300 font-semibold">Select Date & Time</h2>
-              </div>
+          <SelectDateAndTime step={step} setStep={setStep} selectedService={selectedService} selectedVehicle={selectedVehicle} selectedDate={selectedDate} handleDateSelect={handleDateSelect} handleTimeSelect={handleTimeSelect} availableSlots={availableSlots} />
 
-              {/* Selected Service & Vehicle Preview */}
-              <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Service</h4>
-                    <p className="text-gray-800">{selectedService?.name} - ${selectedService?.price}</p>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Vehicle</h4>
-                    <p className="text-gray-800">{selectedVehicle?.year} {selectedVehicle?.make} {selectedVehicle?.model}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Date Selection */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-200 mb-3">
-                  Select Date
-                </label>
-                <input
-                  type="date"
-                  min={new Date().toISOString().split('T')[0]}
-                  onChange={(e) => handleDateSelect(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              {/* Time Slots */}
-              {selectedDate && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-3">
-                    Available Time Slots
-                  </label>
-                  {availableSlots.length === 0 ? (
-                    <div className="text-center py-8 text-gray-200">
-                      No available time slots for this date. Please select another date.
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                      {availableSlots.map((slot) => (
-                        <button
-                          key={slot.time}
-                          onClick={() => handleTimeSelect(slot.datetime, slot.time)}
-                          className="p-4 bg-gray-700 border-2 border-gray-500 rounded-lg hover:border-gray-700 hover:bg-gray-900 transition text-center"
-                        >
-                          <span className="font-semibold text-gray-300">{slot.displayTime}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
 
           {/* Step 4: Confirmation */}
           {step === 4 && (
