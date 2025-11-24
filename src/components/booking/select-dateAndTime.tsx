@@ -1,4 +1,4 @@
-import type { Service, Vehicle, TimeSlot } from "@/app/book/page";
+import type { Service, Vehicle, TimeSlot } from "@/components/booking/booking-page";
 
 const SelectDateAndTime = (
   {

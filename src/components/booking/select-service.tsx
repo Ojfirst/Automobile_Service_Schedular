@@ -1,4 +1,4 @@
-import type { Service } from "@/app/book/page";
+import type { Service } from "@/components/booking/booking-page";
 
 const SelectService = (
   { services, step, onServiceSelect }:

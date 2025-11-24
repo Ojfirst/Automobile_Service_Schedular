@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link";
-import type { Vehicle } from "@/app/book/page";
+import type { Vehicle } from "@/components/booking/booking-page";
 import React from "react";
 
 type Props = {

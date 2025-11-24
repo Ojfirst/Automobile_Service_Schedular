@@ -1,4 +1,4 @@
-import type { Service, Vehicle } from '@/app/book/page'
+import type { Service, Vehicle } from '@/components/booking/booking-page'
 
 
 const AppointmentConfirmation = (
