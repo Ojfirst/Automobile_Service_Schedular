@@ -59,9 +59,9 @@ export default async function ConfirmationPage(props: PageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-950">
       {/* Header */}
-      <header className="bg-white shadow">
+      <header className="bg-gray-900 shadow">
         <div className="container mx-auto px-4 py-4">
           <Link
             href="/dashboard"
@@ -77,7 +77,7 @@ export default async function ConfirmationPage(props: PageProps) {
 
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
-          <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+          <div className="bg-gray-900 rounded-lg shadow-lg p-8 text-center">
             {/* Success Icon */}
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,47 +85,47 @@ export default async function ConfirmationPage(props: PageProps) {
               </svg>
             </div>
 
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">Appointment Confirmed!</h1>
-            <p className="text-gray-600 mb-8">
+            <h1 className="text-3xl font-bold text-gray-400 mb-4">Appointment Confirmed!</h1>
+            <p className="text-gray-200 mb-8">
               Your service appointment has been scheduled successfully. We look forward to serving you!
             </p>
 
             {/* Appointment Details */}
-            <div className="bg-gray-50 rounded-lg p-6 mb-8 text-left">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Appointment Details</h2>
+            <div className="bg-gray-950 rounded-lg p-6 mb-8 text-left">
+              <h2 className="text-xl font-semibold text-gray-400 mb-4">Appointment Details</h2>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Service:</span>
-                  <span className="font-semibold">{appointment.service.name}</span>
+                  <span className="text-gray-500">Service:</span>
+                  <span className="font-semibold text-gray-200">{appointment.service.name}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Vehicle:</span>
-                  <span className="font-semibold">
+                  <span className="text-gray-500">Vehicle:</span>
+                  <span className="font-semibold text-gray-200">
                     {appointment.vehicle.year} {appointment.vehicle.make} {appointment.vehicle.model}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Date & Time:</span>
-                  <span className="font-semibold">
+                  <span className="text-gray-500">Date & Time:</span>
+                  <span className="font-semibold text-gray-200">
                     {new Date(appointment.date).toLocaleDateString()} at {' '}
                     {new Date(appointment.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Duration:</span>
-                  <span className="font-semibold">{appointment.service.duration} minutes</span>
+                  <span className="text-gray-500">Duration:</span>
+                  <span className="font-semibold text-gray-200">{appointment.service.duration} minutes</span>
                 </div>
                 <div className="flex justify-between border-t pt-3 mt-3">
-                  <span className="text-gray-600">Total:</span>
-                  <span className="text-xl font-bold text-gray-900">${appointment.service.price}</span>
+                  <span className="text-gray-500">Total:</span>
+                  <span className="text-xl font-bold text-green-500">${appointment.service.price}</span>
                 </div>
               </div>
             </div>
 
             {/* Next Steps */}
-            <div className="bg-blue-50 rounded-lg p-6 mb-8 text-left">
+            <div className="bg-gray-400 rounded-lg p-6 mb-8 text-left">
               <h3 className="text-lg font-semibold text-gray-900 mb-3">What is Next?</h3>
-              <ul className="space-y-2 text-gray-600">
+              <ul className="space-y-2 text-black">
                 <li>• You will receive a confirmation email shortly</li>
                 <li>• Please arrive 10 minutes before your appointment</li>
                 <li>• Bring your vehicle registration and insurance documents</li>
@@ -143,7 +143,7 @@ export default async function ConfirmationPage(props: PageProps) {
               </Link>
               <Link
                 href="/services"
-                className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition"
+                className="border border-gray-300 text-gray-400 px-6 py-3 rounded-lg font-semibold hover:bg-gray-400 hover:text-gray-900 transition"
               >
                 Book Another Service
               </Link>
