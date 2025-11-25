@@ -1,5 +1,5 @@
+import React from 'react'
 import type { Service, Vehicle } from '@/components/booking/booking-page'
-
 
 const AppointmentConfirmation = (
   {
@@ -15,7 +15,7 @@ const AppointmentConfirmation = (
     setStep: (step: number) => void,
     selectedService: Service | undefined,
     selectedVehicle: Vehicle | undefined,
-    formData: { date: string; time: string; notes?: string },
+    formData: { serviceId?: string; vehicleId?: string; date: string; time: string; notes?: string },
     isLoading: boolean,
     onSubmit: (e: React.FormEvent) => void
   }
