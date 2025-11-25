@@ -4,7 +4,7 @@ import { currentUser } from '@clerk/nextjs/server';
 
 export async function POST(
 	request: Request,
-	{ params }: { params: { id: string } }
+	context: { params?: { id?: string } }
 ) {
 	try {
 		const user = await currentUser();
@@ -13,7 +13,38 @@ export async function POST(
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
-		const appointmentId = params.id;
+		// Read appointment id from params, or fall back to parsing the request URL
+		const appointmentId =
+			context?.params?.id ??
+			(() => {
+				try {
+					const url = new URL(request.url);
+					const parts = url.pathname.split('/').filter(Boolean);
+					const appointmentsIndex = parts.findIndex(
+						(p) => p === 'appointments'
+					);
+					if (
+						appointmentsIndex !== -1 &&
+						parts.length > appointmentsIndex + 1
+					) {
+						return parts[appointmentsIndex + 1];
+					}
+				} catch {
+					// ignore and return undefined
+				}
+				return undefined;
+			})();
+
+		if (!appointmentId) {
+			return NextResponse.json(
+				{ error: 'Missing appointment id in request' },
+				{ status: 400 }
+			);
+		}
+
+		console.log(
+			`🗑️ Cancel request appointmentId=${appointmentId}, params=${JSON.stringify(context?.params)}, url=${request.url}`
+		);
 
 		// Find the appointment and verify it belongs to the user
 		const appointment = await prisma.appointment.findFirst({
@@ -39,8 +70,25 @@ export async function POST(
 		}
 
 		// Check if appointment can be cancelled (at least 2 hours before)
+		const rawDate = appointment.date; // e.g.,
+
+		if (!rawDate) {
+			return NextResponse.json(
+				{ error: 'Appointment date is invalid' },
+				{ status: 500 }
+			);
+		}
+
+		const appointmentTime = new Date(rawDate);
+
+		if (isNaN(appointmentTime.getTime())) {
+			return NextResponse.json(
+				{ error: 'Invalide appointment date format' },
+				{ status: 500 }
+			);
+		}
+
 		const now = new Date();
-		const appointmentTime = new Date(appointment.date);
 		const timeDifference = appointmentTime.getTime() - now.getTime();
 		const hoursDifference = timeDifference / (1000 * 60 * 60);
 
