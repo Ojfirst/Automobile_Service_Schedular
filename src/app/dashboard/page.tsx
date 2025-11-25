@@ -1,6 +1,6 @@
 import { currentUser } from '@clerk/nextjs/server';
 import DashBardNav from '@/components/Navigations/dashboard-nav'
-import DashboardActions from '@/components/dashboard/service-actions';
+import DashboardActions from '@/components/dashboard/action-card/service-actions';
 import VehiclesDB from '@/components/dashboard/vehicles'
 import AddVehcileLink from '@/components/dashboard/add-vehicle.link'
 import Appointments from '@/components/dashboard/appointments'

@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 
-const BookingNav = () => {
+const AppointmentgNav = () => {
 
 
   return (
@@ -50,4 +50,4 @@ const BookingNav = () => {
   )
 }
 
-export default BookingNav;
+export default AppointmentgNav;
