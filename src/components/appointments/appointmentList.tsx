@@ -20,7 +20,7 @@ interface Vehicle {
   vin?: string;
 }
 
-interface Appointment {
+export interface Appointment {
   id: string;
   date: Date;
   status: string;
