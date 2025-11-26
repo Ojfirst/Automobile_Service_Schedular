@@ -9,7 +9,8 @@ import SelectService from '@/components/booking/select-service';
 import SelectVehicles from '@/components/booking/select-vehicles';
 import SelectDateAndTime from '@/components/booking/select-dateAndTime'
 import AppointmentConfirmation from '@/components/booking/appointment-confirmation';
-import ProgressSteps from '@/components/booking/progress-step'
+import ProgressSteps from '@/components/booking/progress-step';
+import { toast } from 'sonner'
 
 export interface Service {
   id: string
@@ -139,10 +140,11 @@ export default function BookPage() {
 
       if (response.ok) {
         const appointment = await response.json()
+        toast.success('Appointment successfully booked');
         router.push(`/booking/confirmation?id=${appointment.id}`)
       } else {
         const error = await response.json()
-        alert(error.error || 'Failed to book appointment')
+        toast.error(error.error || 'Failed to book appointment')
       }
     } catch (error) {
       console.error('Error booking appointment:', error)
