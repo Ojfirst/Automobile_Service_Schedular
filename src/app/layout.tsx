@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import NavBar from "@/components/Navigations/navigation";
 import { seed } from "@/seed";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 
@@ -35,6 +36,7 @@ export default async function RootLayout({
         >
           <NavBar />
           {children}
+          <Toaster richColors position="top-center" />
         </body>
       </html>
     </ClerkProvider>

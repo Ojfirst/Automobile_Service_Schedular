@@ -11,13 +11,15 @@
 	},
 	"dependencies": {
 		"@clerk/nextjs": "^6.35.0",
+		"@headlessui/react": "^2.2.9",
 		"@prisma/client": "^6.19.0",
 		"@react-email/components": "^1.0.1",
 		"next": "16.0.1",
 		"prisma": "^6.19.0",
 		"react": "19.2.0",
 		"react-dom": "19.2.0",
-		"resend": "^6.5.2"
+		"resend": "^6.5.2",
+		"sonner": "^2.0.7"
 	},
 	"devDependencies": {
 		"@tailwindcss/postcss": "^4",

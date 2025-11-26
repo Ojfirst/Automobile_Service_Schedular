@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 interface Service {
   id: string;
@@ -51,11 +52,11 @@ export default function AppointmentCard({ appointment }: AppointmentCardProps) {
         router.refresh(); // Refresh the page to show updated list
       } else {
         const error = await response.json();
-        alert(error.error || 'Failed to cancel appointment');
+        toast.error(error.error || 'Failed to cancel appointment');
       }
     } catch (error) {
       console.error('Error cancelling appointment:', error);
-      alert('Failed to cancel appointment');
+      toast.error('Failed to cancel appointment');
     } finally {
       setIsCancelling(false);
     }
@@ -88,13 +89,13 @@ export default function AppointmentCard({ appointment }: AppointmentCardProps) {
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition">
+    <div className="bg-gray-900 border border-gray-600 rounded-lg p-6 hover:shadow-md transition">
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">
+          <h3 className="text-lg font-semibold text-gray-200">
             {appointment.service.name}
           </h3>
-          <p className="text-gray-600">
+          <p className="text-gray-400">
             {appointment.vehicle.year} {appointment.vehicle.make} {appointment.vehicle.model}
           </p>
         </div>
@@ -105,7 +106,7 @@ export default function AppointmentCard({ appointment }: AppointmentCardProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
-          <p className="text-sm text-gray-600">Date & Time</p>
+          <p className="text-sm text-gray-400">Date & Time</p>
           <p className="font-semibold">
             {new Date(appointment.date).toLocaleDateString('en-US', {
               weekday: 'long',
@@ -114,7 +115,7 @@ export default function AppointmentCard({ appointment }: AppointmentCardProps) {
               day: 'numeric',
             })}
           </p>
-          <p className="text-gray-900">
+          <p className="text-gray-200">
             {new Date(appointment.date).toLocaleTimeString('en-US', {
               hour: '2-digit',
               minute: '2-digit',
@@ -122,15 +123,15 @@ export default function AppointmentCard({ appointment }: AppointmentCardProps) {
           </p>
         </div>
         <div>
-          <p className="text-sm text-gray-600">Service Details</p>
-          <p className="font-semibold">${appointment.service.price}</p>
-          <p className="text-gray-900">{appointment.service.duration} minutes</p>
+          <p className="text-sm text-gray-400">Service Details</p>
+          <p className="font-semibold text-green-400">${appointment.service.price}</p>
+          <p className="text-gray-200">{appointment.service.duration} minutes</p>
         </div>
       </div>
 
       {/* Action Buttons */}
       {appointment.status !== 'CANCELLED' && appointment.status !== 'COMPLETED' && (
-        <div className="flex gap-3 pt-4 border-t border-gray-200">
+        <div className="flex gap-3 pt-4 border-t border-gray-600">
           {canCancel() && (
             <button
               onClick={handleCancel}
@@ -147,7 +148,7 @@ export default function AppointmentCard({ appointment }: AppointmentCardProps) {
               // In a real app, you'd implement a proper reschedule flow
               window.location.href = `/book?service=${appointment.service.id}&vehicle=${appointment.vehicle.id}`;
             }}
-            className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-50 transition"
+            className="border border-gray-600 text-gray-200 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-50 transition"
           >
             Reschedule
           </button>

@@ -57,9 +57,9 @@ export default function AppointmentList({
   const appointments = getAppointmentsByTab();
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto ">
       {/* Tabs */}
-      <div className="bg-white rounded-lg shadow mb-6">
+      <div className="bg-gray-800 rounded-lg shadow mb-6">
         <div className="border-b border-gray-200">
           <nav className="flex -mb-px">
             <button
