@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useOptimistic, startTransition } from 'react';
 import Link from 'next/link';
 import AppointmentCard from './appointmentCard';
+import { useRouter } from 'next/navigation';
 
 interface Service {
   id: string;
@@ -17,12 +18,12 @@ interface Vehicle {
   make: string;
   model: string;
   year: number;
-  vin?: string;
+  vin?: string | null;
 }
 
 export interface Appointment {
   id: string;
-  date: Date;
+  date: string;
   status: string;
   service: Service;
   vehicle: Vehicle;
@@ -34,6 +35,19 @@ interface AppointmentListProps {
   cancelledAppointments: Appointment[];
 }
 
+type OptimisticState = {
+  upcoming: Appointment[];
+  past: Appointment[];
+  cancelled: Appointment[];
+};
+
+type Action =
+  | {
+    type: "delete";
+    id: string;
+  };
+
+
 export default function AppointmentList({
   upcomingAppointments,
   pastAppointments,
@@ -41,20 +55,49 @@ export default function AppointmentList({
 }: AppointmentListProps) {
   const [activeTab, setActiveTab] = useState<'upcoming' | 'past' | 'cancelled'>('upcoming');
 
-  const getAppointmentsByTab = () => {
-    switch (activeTab) {
-      case 'upcoming':
-        return upcomingAppointments;
-      case 'past':
-        return pastAppointments;
-      case 'cancelled':
-        return cancelledAppointments;
-      default:
-        return upcomingAppointments;
+  const [optimisticAppointments, updateOptimistic] = useOptimistic<OptimisticState, Action>(
+    { upcoming: upcomingAppointments, past: pastAppointments, cancelled: cancelledAppointments },
+    (current, action) => {
+      if (action.type === 'delete') {
+        const newState: OptimisticState = { ...current };
+        for (const key of ['upcoming', 'past', 'cancelled'] as const) {
+          newState[key] = newState[key].filter(
+            (apt) => apt.id !== action.id
+          );
+        }
+        return newState;
+      }
+      return current;
     }
+  );
+
+
+  const router = useRouter();
+
+
+  const handleOptimisticDelete = async (id: string) => {
+    // 1. Update UI immediately
+    startTransition(() => {
+      updateOptimistic({ type: 'delete', id });
+    });
+
+    // 2. Send request to backend
+    await fetch(`/api/appointments/${id}/cancel`, {
+      method: 'POST'
+    });
+
+    // 3. Optionally, revalidate
+    router.refresh();
   };
 
-  const appointments = getAppointmentsByTab();
+
+  const appointments =
+    activeTab === 'upcoming'
+      ? optimisticAppointments.upcoming
+      : activeTab === 'past'
+        ? optimisticAppointments.past
+        : optimisticAppointments.cancelled;
+
 
   return (
     <div className="max-w-6xl mx-auto ">
@@ -124,6 +167,7 @@ export default function AppointmentList({
                 <AppointmentCard
                   key={appointment.id}
                   appointment={appointment}
+                  onOptimisticDelete={handleOptimisticDelete}
                 />
               ))}
             </div>

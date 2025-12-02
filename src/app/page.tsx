@@ -1,7 +1,9 @@
 import Link from 'next/link'
 import { SignedIn, SignedOut, } from '@clerk/nextjs'
 
-export default function Home() {
+export default async function Home() {
+
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pt-20">
       <div className="text-center pt-10">
@@ -15,7 +17,7 @@ export default function Home() {
         <div className="space-x-4">
           <SignedOut>
             <Link
-              href="/sign-up"
+              href={"/sign-in"}
               className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
             >
               Get Started

@@ -4,7 +4,7 @@ import { currentUser } from '@clerk/nextjs/server';
 
 export async function POST(
 	request: Request,
-	context: { params?: { id?: string } }
+	context: { params?: Promise<{ id: string }> | { id?: string } }
 ) {
 	try {
 		const user = await currentUser();
@@ -13,9 +13,32 @@ export async function POST(
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
-		// Read appointment id from params, or fall back to parsing the request URL
+		// Resolve params if Next passes them as a Promise (dev types)
+		const rawParams = context?.params;
+		let resolvedParams: { id?: string } | undefined;
+
+		const isThenable = (obj: unknown): obj is Promise<{ id: string }> => {
+			return (
+				typeof obj === 'object' &&
+				obj !== null &&
+				'then' in obj &&
+				typeof (obj as { then?: unknown }).then === 'function'
+			);
+		};
+
+		if (rawParams && isThenable(rawParams)) {
+			try {
+				resolvedParams = await rawParams;
+			} catch {
+				resolvedParams = undefined;
+			}
+		} else {
+			resolvedParams = rawParams as { id?: string } | undefined;
+		}
+
+		// Read appointment id from resolved params, or fall back to parsing the request URL
 		const appointmentId =
-			context?.params?.id ??
+			resolvedParams?.id ??
 			(() => {
 				try {
 					const url = new URL(request.url);
@@ -43,7 +66,7 @@ export async function POST(
 		}
 
 		console.log(
-			`🗑️ Cancel request appointmentId=${appointmentId}, params=${JSON.stringify(context?.params)}, url=${request.url}`
+			`🗑️ Cancel request appointmentId=${appointmentId}, params=${JSON.stringify(resolvedParams)}, url=${request.url}`
 		);
 
 		// Find the appointment and verify it belongs to the user

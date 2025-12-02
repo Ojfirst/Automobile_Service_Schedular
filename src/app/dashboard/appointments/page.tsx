@@ -34,19 +34,25 @@ export default async function AppointmentsPage() {
     }
   });
 
+  // Serialize dates to strings so they can be passed into client components
+  const serializedAppointments = appointments.map(apt => ({
+    ...apt,
+    date: apt.date instanceof Date ? apt.date.toISOString() : String(apt.date),
+  }));
+
   // Separate appointments by status
-  const upcomingAppointments = appointments.filter(apt =>
+  const upcomingAppointments = serializedAppointments.filter(apt =>
     new Date(apt.date) >= new Date() &&
     apt.status !== 'CANCELLED' &&
     apt.status !== 'COMPLETED'
   );
 
-  const pastAppointments = appointments.filter(apt =>
+  const pastAppointments = serializedAppointments.filter(apt =>
     new Date(apt.date) < new Date() ||
     apt.status === 'COMPLETED'
   );
 
-  const cancelledAppointments = appointments.filter(apt =>
+  const cancelledAppointments = serializedAppointments.filter(apt =>
     apt.status === 'CANCELLED'
   );
 

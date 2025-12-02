@@ -10,7 +10,7 @@
 		"db:seed": "ts-node src/prisma.db.ts"
 	},
 	"dependencies": {
-		"@clerk/nextjs": "^6.35.0",
+		"@clerk/nextjs": "^6.35.5",
 		"@headlessui/react": "^2.2.9",
 		"@prisma/client": "^6.19.0",
 		"@react-email/components": "^1.0.1",

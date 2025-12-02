@@ -6,14 +6,21 @@ import { toast } from 'sonner';
 import ConfirmCancelModal from '@/app/_lib/utils/modal';
 import type { Appointment } from '@/components/appointments/appointmentList';
 
-export default function AppointmentCard({ appointment }: { appointment: Appointment }) {
+export default function AppointmentCard({
+  appointment,
+  onOptimisticDelete
+}: {
+  appointment: Appointment;
+  onOptimisticDelete: (id: string) => void;
+}) {
   const router = useRouter();
-  const [isCancelling, setIsCancelling] = useState(false);
+
   const [showModal, setShowModal] = useState(false);
 
   const handleCancel = async () => {
     setShowModal(false); // close modal
-    setIsCancelling(true);
+
+    onOptimisticDelete(appointment.id);
 
     try {
       const response = await fetch(`/api/appointments/${appointment.id}/cancel`, {
@@ -30,8 +37,6 @@ export default function AppointmentCard({ appointment }: { appointment: Appointm
     } catch (error) {
       console.error('Error cancelling appointment:', error);
       toast.error('Failed to cancel appointment');
-    } finally {
-      setIsCancelling(false);
     }
   };
 
@@ -116,11 +121,11 @@ export default function AppointmentCard({ appointment }: { appointment: Appointm
             {canCancel() && (
               <button
                 onClick={() => setShowModal(true)}
-                disabled={isCancelling}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition"
               >
-                {isCancelling ? 'Cancelling...' : 'Cancel Appointment'}
+                Cancel Appointment
               </button>
+
             )}
 
             <button

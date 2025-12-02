@@ -1,10 +1,10 @@
 import { prisma } from '@/prisma.db';
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
 
 export async function POST(
-	request: Request,
-	{ params }: { params: { id: string } }
+	request: NextRequest,
+	context: { params: Promise<{ id: string }> }
 ) {
 	try {
 		const user = await currentUser();
@@ -13,8 +13,10 @@ export async function POST(
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
+		// Await params promise
+		const { id: appointmentId } = await context.params;
+
 		const { newDate } = await request.json();
-		const appointmentId = params.id;
 
 		if (!newDate) {
 			return NextResponse.json(
@@ -23,7 +25,6 @@ export async function POST(
 			);
 		}
 
-		// Find the appointment and verify it belongs to the user
 		const appointment = await prisma.appointment.findFirst({
 			where: {
 				id: appointmentId,
@@ -31,11 +32,7 @@ export async function POST(
 					clerkUserId: user.id,
 				},
 			},
-			include: {
-				service: true,
-				vehicle: true,
-				user: true,
-			},
+			include: { service: true, vehicle: true, user: true },
 		});
 
 		if (!appointment) {
@@ -48,7 +45,6 @@ export async function POST(
 			);
 		}
 
-		// Check if new time slot is available
 		const existingAppointment = await prisma.appointment.findFirst({
 			where: {
 				date: new Date(newDate),
@@ -67,22 +63,11 @@ export async function POST(
 			);
 		}
 
-		// Update appointment date
 		const updatedAppointment = await prisma.appointment.update({
 			where: { id: appointmentId },
-			data: {
-				date: new Date(newDate),
-				status: 'PENDING', // Reset to pending for rescheduled appointments
-			},
-			include: {
-				service: true,
-				vehicle: true,
-			},
+			data: { date: new Date(newDate), status: 'PENDING' },
+			include: { service: true, vehicle: true },
 		});
-
-		console.log(
-			`✅ Appointment ${appointmentId} rescheduled by user ${user.id}`
-		);
 
 		return NextResponse.json({
 			success: true,
@@ -90,7 +75,7 @@ export async function POST(
 			appointment: updatedAppointment,
 		});
 	} catch (error) {
-		console.error('❌ Error rescheduling appointment:', error);
+		console.error(error);
 		return NextResponse.json(
 			{ error: 'Internal server error' },
 			{ status: 500 }

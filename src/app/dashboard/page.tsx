@@ -1,3 +1,7 @@
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+
+
 import { currentUser } from '@clerk/nextjs/server';
 import DashBardNav from '@/components/Navigations/dashboard-nav'
 import DashboardActions from '@/components/dashboard/action-card/service-actions';
@@ -7,6 +11,7 @@ import Appointments from '@/components/dashboard/appointments'
 import VehicleStats from '@/components/dashboard/vehicle-statistic';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
+import { prisma } from '@/prisma.db';
 import Loading from '../_lib/utils/loading';
 
 
@@ -15,6 +20,13 @@ export default async function Dashboard() {
 
   if (!user) {
     redirect('/sign-in')
+  }
+
+  const dbUser = await prisma.user.findUnique({
+    where: { clerkUserId: user.id }
+  })
+  if (!dbUser) {
+    redirect('/dashboard')
   }
 
   return (
@@ -31,13 +43,13 @@ export default async function Dashboard() {
           <div className="bg-gray-800 rounded-lg shadow">
             <AddVehcileLink />
             <Suspense fallback={<Loading />}>
-              <VehiclesDB user={user} />
+              <VehiclesDB clerkUserId={user.id} />
             </Suspense>
           </div>
 
           {/* Upcoming Appointments Section */}
           <Suspense fallback={<Loading />}>
-            <Appointments user={user} />
+            <Appointments userId={dbUser.id} />
           </Suspense>
         </div>
 

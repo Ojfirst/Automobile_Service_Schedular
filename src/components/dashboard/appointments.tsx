@@ -1,19 +1,9 @@
 import { prisma } from "@/prisma.db";
-import type { currentUser } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
 
-const Appointments = async ({ user }: { user: Awaited<ReturnType<typeof currentUser>> }) => {
-
-  if (!user) {
-    redirect('/sign-in');
-  }
-
-  const dbUser = await prisma.user.findUnique({
-    where: { clerkUserId: user.id }
-  })
+const Appointments = async ({ userId }: { userId: string }) => {
 
   const appointments = await prisma.appointment.findMany({
-    where: { userId: dbUser?.id, date: { gte: new Date() } },
+    where: { userId: userId, date: { gte: new Date() } },
     include: {
       service: true,
       vehicle: true
