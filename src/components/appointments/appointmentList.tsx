@@ -1,10 +1,8 @@
 'use client';
 
-import { useState, useOptimistic, startTransition } from 'react';
-import Link from 'next/link';
+import Link from "next/link";
+import { useState } from 'react';
 import AppointmentCard from './appointmentCard';
-import { useRouter } from 'next/navigation';
-
 interface Service {
   id: string;
   name: string;
@@ -21,7 +19,7 @@ interface Vehicle {
   vin?: string | null;
 }
 
-export interface Appointment {
+interface Appointment {
   id: string;
   date: string;
   status: string;
@@ -35,19 +33,6 @@ interface AppointmentListProps {
   cancelledAppointments: Appointment[];
 }
 
-type OptimisticState = {
-  upcoming: Appointment[];
-  past: Appointment[];
-  cancelled: Appointment[];
-};
-
-type Action =
-  | {
-    type: "delete";
-    id: string;
-  };
-
-
 export default function AppointmentList({
   upcomingAppointments,
   pastAppointments,
@@ -55,61 +40,32 @@ export default function AppointmentList({
 }: AppointmentListProps) {
   const [activeTab, setActiveTab] = useState<'upcoming' | 'past' | 'cancelled'>('upcoming');
 
-  const [optimisticAppointments, updateOptimistic] = useOptimistic<OptimisticState, Action>(
-    { upcoming: upcomingAppointments, past: pastAppointments, cancelled: cancelledAppointments },
-    (current, action) => {
-      if (action.type === 'delete') {
-        const newState: OptimisticState = { ...current };
-        for (const key of ['upcoming', 'past', 'cancelled'] as const) {
-          newState[key] = newState[key].filter(
-            (apt) => apt.id !== action.id
-          );
-        }
-        return newState;
-      }
-      return current;
+  const getAppointmentsByTab = () => {
+    switch (activeTab) {
+      case 'upcoming':
+        return upcomingAppointments;
+      case 'past':
+        return pastAppointments;
+      case 'cancelled':
+        return cancelledAppointments;
+      default:
+        return upcomingAppointments;
     }
-  );
-
-
-  const router = useRouter();
-
-
-  const handleOptimisticDelete = async (id: string) => {
-    // 1. Update UI immediately
-    startTransition(() => {
-      updateOptimistic({ type: 'delete', id });
-    });
-
-    // 2. Send request to backend
-    await fetch(`/api/appointments/${id}/cancel`, {
-      method: 'POST'
-    });
-
-    // 3. Optionally, revalidate
-    router.refresh();
   };
 
-
-  const appointments =
-    activeTab === 'upcoming'
-      ? optimisticAppointments.upcoming
-      : activeTab === 'past'
-        ? optimisticAppointments.past
-        : optimisticAppointments.cancelled;
-
+  const appointments = getAppointmentsByTab();
 
   return (
-    <div className="max-w-6xl mx-auto ">
+    <div className="max-w-6xl mx-auto">
       {/* Tabs */}
-      <div className="bg-gray-800 rounded-lg shadow mb-6">
+      <div className="bg-gray-900 rounded-lg shadow mb-6">
         <div className="border-b border-gray-200">
           <nav className="flex -mb-px">
             <button
               onClick={() => setActiveTab('upcoming')}
               className={`py-4 px-6 text-center border-b-2 font-medium text-sm ${activeTab === 'upcoming'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? 'border-blue-500 text-blue-400'
+                : 'border-transparent text-gray-200 hover:text-gray-400 hover:border-gray-200'
                 }`}
             >
               Upcoming ({upcomingAppointments.length})
@@ -118,7 +74,7 @@ export default function AppointmentList({
               onClick={() => setActiveTab('past')}
               className={`py-4 px-6 text-center border-b-2 font-medium text-sm ${activeTab === 'past'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                : 'border-transparent text-gray-200 hover:text-gray-400 hover:border-gray-200'
                 }`}
             >
               Past ({pastAppointments.length})
@@ -127,7 +83,7 @@ export default function AppointmentList({
               onClick={() => setActiveTab('cancelled')}
               className={`py-4 px-6 text-center border-b-2 font-medium text-sm ${activeTab === 'cancelled'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                : 'border-transparent text-gray-200 hover:text-gray-400 hover:border-gray-200'
                 }`}
             >
               Cancelled ({cancelledAppointments.length})
@@ -167,7 +123,6 @@ export default function AppointmentList({
                 <AppointmentCard
                   key={appointment.id}
                   appointment={appointment}
-                  onOptimisticDelete={handleOptimisticDelete}
                 />
               ))}
             </div>

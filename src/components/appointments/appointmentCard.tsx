@@ -2,34 +2,54 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
 import ConfirmCancelModal from '@/app/_lib/utils/modal';
-import type { Appointment } from '@/components/appointments/appointmentList';
+import { toast } from 'sonner';
 
-export default function AppointmentCard({
-  appointment,
-  onOptimisticDelete
-}: {
+interface Service {
+  id: string;
+  name: string;
+  description: string;
+  duration: number;
+  price: number;
+}
+
+interface Vehicle {
+  id: string;
+  make: string;
+  model: string;
+  year: number;
+  vin?: string | null;
+}
+
+interface Appointment {
+  id: string;
+  date: string;
+  status: string;
+  service: Service;
+  vehicle: Vehicle;
+}
+
+interface AppointmentCardProps {
   appointment: Appointment;
-  onOptimisticDelete: (id: string) => void;
-}) {
-  const router = useRouter();
+}
 
+export default function AppointmentCard({ appointment }: AppointmentCardProps) {
+  const router = useRouter();
+  const [isCancelling, setIsCancelling] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
   const handleCancel = async () => {
-    setShowModal(false); // close modal
+    setShowModal(false);
 
-    onOptimisticDelete(appointment.id);
-
+    setIsCancelling(true);
     try {
       const response = await fetch(`/api/appointments/${appointment.id}/cancel`, {
         method: 'POST',
       });
 
       if (response.ok) {
-        toast.success('Appointment cancelled');
-        router.refresh();
+        toast.success('Appointment cancelled successfully');
+        router.refresh(); // Refresh the page to show updated list
       } else {
         const error = await response.json();
         toast.error(error.error || 'Failed to cancel appointment');
@@ -37,16 +57,18 @@ export default function AppointmentCard({
     } catch (error) {
       console.error('Error cancelling appointment:', error);
       toast.error('Failed to cancel appointment');
+    } finally {
+      setIsCancelling(false);
     }
   };
 
   const canCancel = () => {
     const now = new Date();
     const appointmentTime = new Date(appointment.date);
-    const diffMs = appointmentTime.getTime() - now.getTime();
-    const diffHours = diffMs / (1000 * 60 * 60);
+    const timeDifference = appointmentTime.getTime() - now.getTime();
+    const hoursDifference = timeDifference / (1000 * 60 * 60);
 
-    return diffHours >= 2 && appointment.status === 'PENDING';
+    return hoursDifference >= 2 && appointment.status === 'PENDING';
   };
 
   const getStatusColor = (status: string) => {
@@ -68,13 +90,16 @@ export default function AppointmentCard({
 
   return (
     <>
+
       <ConfirmCancelModal
         open={showModal}
-        onConfirm={handleCancel}
         onClose={() => setShowModal(false)}
+        onConfirm={() => {
+          void handleCancel();
+        }}
       />
 
-      <div className="bg-gray-900 border border-gray-600 rounded-lg p-6 hover:shadow-md transition">
+      <div className="bg-gray-950 border border-gray-800 rounded-lg p-6 hover:shadow-md transition">
         <div className="flex justify-between items-start mb-4">
           <div>
             <h3 className="text-lg font-semibold text-gray-200">
@@ -84,7 +109,6 @@ export default function AppointmentCard({
               {appointment.vehicle.year} {appointment.vehicle.make} {appointment.vehicle.model}
             </p>
           </div>
-
           <span className={`px-3 py-1 text-xs font-semibold rounded-full ${getStatusColor(appointment.status)}`}>
             {appointment.status}
           </span>
@@ -108,31 +132,33 @@ export default function AppointmentCard({
               })}
             </p>
           </div>
-
           <div>
             <p className="text-sm text-gray-400">Service Details</p>
-            <p className="font-semibold text-green-400">${appointment.service.price}</p>
+            <p className="font-semibold text-green-500">${appointment.service.price}</p>
             <p className="text-gray-200">{appointment.service.duration} minutes</p>
           </div>
         </div>
 
+        {/* Action Buttons */}
         {appointment.status !== 'CANCELLED' && appointment.status !== 'COMPLETED' && (
-          <div className="flex gap-3 pt-4 border-t border-gray-600">
+          <div className="flex gap-3 pt-4 border-t border-gray-800">
             {canCancel() && (
               <button
                 onClick={() => setShowModal(true)}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition"
+                disabled={isCancelling}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Cancel Appointment
+                {isCancelling ? 'Cancelling...' : 'Cancel Appointment'}
               </button>
-
             )}
 
             <button
               onClick={() => {
+                // For now, redirect to booking page with service pre-selected
+                // In a real app, you'd implement a proper reschedule flow
                 window.location.href = `/book?service=${appointment.service.id}&vehicle=${appointment.vehicle.id}`;
               }}
-              className="border border-gray-600 text-gray-200 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-50 transition"
+              className="border border-gray-500 text-gray-200 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-50 transition"
             >
               Reschedule
             </button>
