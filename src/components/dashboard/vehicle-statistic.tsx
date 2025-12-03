@@ -1,14 +1,15 @@
 import { prisma } from "@/prisma.db";
-import { currentUser } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
+import type { User } from "@clerk/nextjs/server";
 
+const VehicleStats = async ({ user }: { user: User | null }) => {
 
-
-const VehicleStats = async () => {
-  const user = await currentUser();
-
+  // Guard: user must exist
   if (!user) {
-    redirect('/sign-in')
+    return (
+      <div className="mt-8 text-center text-gray-400">
+        User information not available
+      </div>
+    );
   }
 
   // Find or create user in our database

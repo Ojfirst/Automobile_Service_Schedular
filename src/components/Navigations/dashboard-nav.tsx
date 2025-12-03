@@ -1,7 +1,11 @@
-import { currentUser } from "@clerk/nextjs/server";
 
-const DashBardNav = async () => {
-  const user = await currentUser();
+
+const DashBardNav = async ({ user }: { user: { firstName?: string | null } }) => {
+
+  if (!user) {
+    return null;
+  }
+
 
   return <header className="bg-gray-900 shadow">
     <div className="container mx-auto px-4 py-4 flex justify-between items-center">

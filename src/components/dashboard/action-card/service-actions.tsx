@@ -1,7 +1,25 @@
 import Link from "next/link";
-import { actionCards } from "./action-card";
+import React from "react";
 
-const DashboardActions = () => {
+interface ActionCard {
+  href: string;
+  hoverColor: string;
+  gradientFrom: string;
+  gradientTo: string;
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  pulseColor: string;
+  progressColor: string;
+  hoverProgressColor: string;
+}
+
+interface DashboardActionsProps {
+  actionCards?: ActionCard[];
+}
+
+const DashboardActions = ({ actionCards = [] }: DashboardActionsProps) => {
+
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
