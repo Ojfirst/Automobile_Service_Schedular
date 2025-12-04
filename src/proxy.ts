@@ -1,4 +1,9 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import {
+	clerkMiddleware,
+	createRouteMatcher,
+	clerkClient,
+} from '@clerk/nextjs/server';
+import { NextResponse } from 'next/server';
 
 const isPublicRoute = createRouteMatcher([
 	'/',
@@ -9,9 +14,37 @@ const isPublicRoute = createRouteMatcher([
 	'/api/emails(.*)',
 ]);
 
-const isAdminRoute = createRouteMatcher(['/admin-dashboard(.*)']);
+const isAdminRoute = createRouteMatcher(['/admin(.*)']);
 
 export default clerkMiddleware(async (auth, req) => {
+	if (isAdminRoute(req)) {
+		const { userId, sessionClaims } = await auth();
+
+		if (!userId) {
+			return NextResponse.redirect(new URL('/sign-in', req.url));
+		}
+
+		// Prefer checking the user's public metadata (more reliable)
+		try {
+			let clerkUser = null;
+			if (userId) {
+				const client = await clerkClient();
+				clerkUser = await client.users.getUser(userId);
+			}
+			const role =
+				clerkUser?.publicMetadata?.role ?? sessionClaims?.metadata?.role;
+			if (role !== 'admin') {
+				return NextResponse.redirect(new URL('/dashboard', req.url));
+			}
+		} catch {
+			// If fetching the user fails, fall back to session claims check
+			const role = sessionClaims?.metadata?.role;
+			if (role !== 'admin') {
+				return NextResponse.redirect(new URL('/dashboard', req.url));
+			}
+		}
+	}
+
 	const { userId, redirectToSignIn } = await auth();
 
 	if (!userId && !isPublicRoute(req)) {
