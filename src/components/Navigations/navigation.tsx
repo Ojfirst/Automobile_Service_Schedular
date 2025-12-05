@@ -13,7 +13,7 @@ const NavBar = () => {
 
           <SignedOut>
             <SignInButton mode="modal">
-              <button className="text-gray-700 hover:text-gray-900 font-medium">
+              <button className="text-gray-400 hover:text-gray-200 font-medium">
                 Sign In
               </button>
             </SignInButton>

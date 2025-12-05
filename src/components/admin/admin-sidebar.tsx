@@ -34,7 +34,7 @@ export default function AdminSidebar() {
   return (
     <aside className={`
       h-[calc(100vh-73px)] sticky top-[73px] 
-      bg-gray-900/50 backdrop-blur-sm border-r border-gray-800
+      bg-black backdrop-blur-sm border-r border-gray-800
       ${isCollapsed ? 'w-20' : 'w-64'} 
       transition-all duration-300 ease-in-out
     `}>
@@ -64,12 +64,12 @@ export default function AdminSidebar() {
                 className={`
                   flex items-center gap-3 p-3 rounded-xl transition-all
                   ${isActive
-                    ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-300 border border-blue-500/30'
+                    ? 'bg-gray-900 text-white border border-gray-500/10'
                     : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
                   }
                 `}
               >
-                <Icon className={`w-5 h-5 ${isActive ? 'text-blue-400' : ''}`} />
+                <Icon className={`w-5 h-5 ${isActive ? 'text-gray-200' : ''}`} />
                 {!isCollapsed && (
                   <span className="font-medium">{item.label}</span>
                 )}

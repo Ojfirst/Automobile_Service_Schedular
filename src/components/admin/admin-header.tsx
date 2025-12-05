@@ -19,15 +19,15 @@ export default function AdminHeader() {
               href="/admin"
               className="flex items-center gap-2 text-xl font-bold"
             >
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-amber-300 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold">A</span>
               </div>
-              <span className="hidden sm:inline bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              <span className="hidden sm:inline bg-amber-400 bg-clip-text text-transparent">
                 AutoCare Admin
               </span>
             </Link>
 
-            <div className="hidden md:flex items-center gap-2 text-sm text-gray-400">
+            <div className="hidden md:flex items-center gap-2 text-sm text-gray-200">
               <span>/</span>
               <span className="capitalize">
                 {pathname.split('/').filter(Boolean).pop() || 'dashboard'}

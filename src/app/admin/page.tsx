@@ -7,7 +7,8 @@ import DashboardStats from '@/components/admin/dashboard-stats'
 import RecentAppointments from '@/components/admin/recent-appointments'
 import QuickActions from '@/components/admin/quick-actions'
 
-export default async function AdminDashboard() {
+const AdminDashboard = async () => {
+
   const user = await currentUser()
 
   // Redirect if not authenticated
@@ -91,11 +92,11 @@ export default async function AdminDashboard() {
       <div className="flex">
         <AdminSidebar />
 
-        <main className="flex-1 p-6 lg:p-8">
+        <main className="flex-1 p-6 lg:p-8 bg-black">
           {/* Welcome Section */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Welcome back, {user.firstName}!
+            <h1 className="text-3xl font-bold text-gray-200">
+              <span className='text-blue-500 text-2xl'>Welcome back</span>, {user.firstName}!
             </h1>
             <p className="text-gray-400 mt-2">
               Here&apos;s what&apos;s happening with your service center today.
@@ -146,3 +147,5 @@ export default async function AdminDashboard() {
     </div>
   )
 }
+
+export default AdminDashboard;
