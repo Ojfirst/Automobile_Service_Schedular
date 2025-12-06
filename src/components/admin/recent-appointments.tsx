@@ -187,7 +187,7 @@ export default function RecentAppointments({ appointments }: RecentAppointmentsP
         <p className="text-sm text-gray-400">
           Showing {filteredAppointments.length} of {appointments.length} appointments
         </p>
-        <button className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-colors">
+        <button className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-colors" onClick={() => setSelectedStatus('all')}>
           View All Appointments
         </button>
       </div>
