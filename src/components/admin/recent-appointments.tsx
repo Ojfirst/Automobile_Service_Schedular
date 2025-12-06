@@ -4,6 +4,7 @@ import { useState } from 'react'
 import type { ComponentType } from 'react'
 import { useRouter } from 'next/navigation'
 import { MoreVertical, CheckCircle, XCircle, Clock, Wrench } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface Appointment {
   id: string
@@ -19,7 +20,7 @@ interface Appointment {
     year: number
   }
   user: {
-    name: string
+    name: string | null
     email: string
   }
 }
@@ -57,10 +58,12 @@ export default function RecentAppointments({ appointments }: RecentAppointmentsP
       })
 
       if (response.ok) {
-        router.refresh()
+        toast.success('Appointment status updated');
+        router.refresh();
       }
     } catch (error) {
-      console.error('Failed to update appointment:', error)
+      console.error('Failed to update appointment:', error);
+      toast.error('Failed to update appointment status');
     }
   }
 

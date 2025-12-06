@@ -70,6 +70,12 @@ const AdminDashboard = async () => {
   const todayStart = new Date(today.setHours(0, 0, 0, 0))
   const todayEnd = new Date(today.setHours(23, 59, 59, 999))
 
+  // Serialize appointments: convert Date to string and match RecentAppointments interface
+  const serializedAppointments = appointments.map(apt => ({
+    ...apt,
+    date: apt.date instanceof Date ? apt.date.toISOString() : String(apt.date),
+  }))
+
   const stats = {
     totalAppointments: appointments.length,
     todaysAppointments: appointments.filter(a =>
@@ -109,7 +115,7 @@ const AdminDashboard = async () => {
           {/* Main Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
             <div className="lg:col-span-2">
-              <RecentAppointments appointments={appointments} />
+              <RecentAppointments appointments={serializedAppointments} />
             </div>
 
             <div className="space-y-6">

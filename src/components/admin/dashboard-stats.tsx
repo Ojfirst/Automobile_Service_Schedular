@@ -32,6 +32,7 @@ const statCards = [
     title: "Today's Appointments",
     icon: Calendar,
     color: 'from-blue-500 to-cyan-500',
+    color2: 'from-gray-500 to-gray-700',
     change: '+12%',
   },
   {
@@ -39,6 +40,7 @@ const statCards = [
     title: 'Pending',
     icon: Clock,
     color: 'from-amber-500 to-orange-500',
+    color2: 'from-gray-500 to-gray-700',
     change: '+3',
   },
   {
@@ -46,6 +48,7 @@ const statCards = [
     title: 'In Progress',
     icon: Wrench,
     color: 'from-emerald-500 to-green-500',
+    color2: 'from-gray-500 to-gray-700',
     change: '-2',
   },
   {
@@ -53,6 +56,7 @@ const statCards = [
     title: 'Revenue',
     icon: DollarSign,
     color: 'from-violet-500 to-purple-500',
+    color2: 'from-gray-500 to-gray-700',
     change: '+24%',
   },
   {
@@ -60,6 +64,7 @@ const statCards = [
     title: 'Users',
     icon: Users,
     color: 'from-rose-500 to-pink-500',
+    color2: 'from-gray-500 to-gray-700',
     change: '+8%',
   },
   {
@@ -67,6 +72,7 @@ const statCards = [
     title: 'Vehicles',
     icon: Car,
     color: 'from-sky-500 to-blue-500',
+    color2: 'from-gray-500 to-gray-700',
     change: '+15%',
   },
 ]
@@ -98,7 +104,7 @@ export default function DashboardStats({ stats }: DashboardStatsProps) {
             className="group bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-2xl p-5 hover:border-gray-700 hover:scale-[1.02] transition-all duration-300"
           >
             <div className="flex items-start justify-between mb-4">
-              <div className={`p-2 rounded-lg bg-gradient-to-br ${card.color}`}>
+              <div className={`p-2 rounded-lg bg-gradient-to-br ${card.color2}`}>
                 <Icon className="w-5 h-5 text-white" />
               </div>
               <span className={`text-xs font-semibold px-2 py-1 rounded-full ${card.change.startsWith('+')

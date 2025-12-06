@@ -18,7 +18,7 @@ const quickActions = [
     title: 'Schedule Service',
     description: 'Create new appointment',
     icon: CalendarPlus,
-    color: 'from-blue-500 to-cyan-500',
+    color: 'from-gray-500 to-gray-700',
     action: () => console.log('Schedule service'),
   },
   {
@@ -26,7 +26,7 @@ const quickActions = [
     title: 'Add Customer',
     description: 'Register new customer',
     icon: UserPlus,
-    color: 'from-emerald-500 to-green-500',
+    color: 'from-gray-500 to-gray-700',
     action: () => console.log('Add customer'),
   },
   {
@@ -34,7 +34,7 @@ const quickActions = [
     title: 'Generate Report',
     description: 'Create monthly report',
     icon: FileText,
-    color: 'from-violet-500 to-purple-500',
+    color: 'from-gray-500 to-gray-700',
     action: () => console.log('Generate report'),
   },
   {
@@ -42,7 +42,7 @@ const quickActions = [
     title: 'Send Notification',
     description: 'Notify customers',
     icon: MessageSquare,
-    color: 'from-amber-500 to-orange-500',
+    color: 'from-gray-500 to-gray-700',
     action: () => console.log('Send notification'),
   },
 ]

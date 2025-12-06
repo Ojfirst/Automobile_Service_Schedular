@@ -19,10 +19,10 @@ export default function AdminHeader() {
               href="/admin"
               className="flex items-center gap-2 text-xl font-bold"
             >
-              <div className="w-8 h-8 bg-amber-300 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold">A</span>
               </div>
-              <span className="hidden sm:inline bg-amber-400 bg-clip-text text-transparent">
+              <span className="hidden sm:inline bg-gray-200 bg-clip-text text-transparent">
                 AutoCare Admin
               </span>
             </Link>
@@ -70,7 +70,6 @@ export default function AdminHeader() {
                 <p className="text-xs text-gray-400">Administrator</p>
               </div>
               <UserButton
-                afterSignOutUrl="/"
                 appearance={{
                   elements: {
                     avatarBox: "w-9 h-9 border-2 border-gray-700",

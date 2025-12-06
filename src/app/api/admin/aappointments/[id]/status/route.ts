@@ -10,10 +10,10 @@ const validStatuses = [
 	'CANCELLED',
 ] as const;
 
-export async function PATCH(
+const PATCH = async (
 	request: NextRequest,
 	{ params }: { params: Promise<{ id: string }> }
-) {
+) => {
 	try {
 		const user = await currentUser();
 		const { id } = await params;
@@ -45,7 +45,7 @@ export async function PATCH(
 		const { status } = body;
 
 		// Validate status
-		if (!validStatuses.includes(status as any)) {
+		if (!validStatuses.includes(status as (typeof validStatuses)[number])) {
 			return NextResponse.json(
 				{ error: 'Invalid status value' },
 				{ status: 400 }
@@ -88,4 +88,6 @@ export async function PATCH(
 			{ status: 500 }
 		);
 	}
-}
+};
+
+export { PATCH };
