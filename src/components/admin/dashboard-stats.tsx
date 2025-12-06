@@ -86,6 +86,7 @@ export default function DashboardStats({ stats }: DashboardStatsProps) {
         ...prev,
         todaysAppointments: stats.todaysAppointments,
         pendingAppointments: stats.pendingAppointments,
+        totalRevenue: stats.totalRevenue
       }))
     }, 5000)
 
