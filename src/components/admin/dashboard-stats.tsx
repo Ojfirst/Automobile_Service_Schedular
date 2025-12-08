@@ -1,7 +1,8 @@
 'use client'
 
 import { Users, Calendar, Car, DollarSign, Wrench } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react';
+import AutoRefresh from '@/app/_lib/utils/auto-refresh';
 
 interface DashboardStatsProps {
   stats: {
@@ -80,21 +81,31 @@ const statCards = [
 export default function DashboardStats({ stats }: DashboardStatsProps) {
   const [animatedValues, setAnimatedValues] = useState(stats)
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setAnimatedValues(prev => ({
-        ...prev,
-        todaysAppointments: stats.todaysAppointments,
-        pendingAppointments: stats.pendingAppointments,
-        totalRevenue: stats.totalRevenue
-      }))
-    }, 5000)
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setAnimatedValues(prev => ({
+  //       ...prev,
+  //       todaysAppointments: stats.todaysAppointments,
+  //       pendingAppointments: stats.pendingAppointments,
+  //       totalRevenue: stats.totalRevenue
+  //     }))
+  //   }, 5000)
 
-    return () => clearInterval(interval)
-  }, [stats])
+  //   return () => clearInterval(interval)
+  // }, [stats])
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      <AutoRefresh interval={2000} onInterval={() => {
+        // You can add any side effects here if needed on each refresh
+        setAnimatedValues(prev => ({
+          ...prev,
+          todaysAppointments: stats.todaysAppointments,
+          pendingAppointments: stats.pendingAppointments,
+          totalRevenue: stats.totalRevenue
+        }));
+      }} />
+
       {statCards.map((card) => {
         const Icon = card.icon
         const value = animatedValues[card.key as keyof typeof animatedValues]
