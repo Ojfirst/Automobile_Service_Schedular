@@ -14,7 +14,7 @@ export default async function VehiclesPage() {
 
   const vehicles = await prisma.vehicle.findMany({
     include: {
-      user: true,
+      owner: true,
     },
     orderBy: { createdAt: 'desc' },
   })

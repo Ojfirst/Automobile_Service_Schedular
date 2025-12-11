@@ -13,15 +13,17 @@ interface UserWithCounts extends User {
 
 interface UsersTableProps {
   users: UserWithCounts[]
+  initialQuery?: string
 }
 
-export default function UsersTable({ users }: UsersTableProps) {
-  const [searchTerm, setSearchTerm] = useState('')
+export default function UsersTable({ users, initialQuery }: UsersTableProps) {
+  const [searchTerm, setSearchTerm] = useState(initialQuery ?? '')
   const [selectedUsers, setSelectedUsers] = useState<string[]>([])
 
+  const s = searchTerm.toLowerCase()
   const filteredUsers = users.filter(user =>
-    user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    (user.name ?? '').toLowerCase().includes(s) ||
+    (user.email ?? '').toLowerCase().includes(s)
   )
 
   const toggleSelectUser = (userId: string) => {

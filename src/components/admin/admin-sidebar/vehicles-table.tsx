@@ -5,7 +5,7 @@ import { Vehicle, User } from '@prisma/client'
 import { Car, UserCircle, Calendar, Fuel, Search, Filter, MoreVertical } from 'lucide-react'
 
 interface VehicleWithUser extends Vehicle {
-  user: User
+  owner: User
 }
 
 interface VehiclesTableProps {
@@ -122,8 +122,8 @@ export default function VehiclesTable({ vehicles }: VehiclesTableProps) {
                         <UserCircle className="w-6 h-6 text-gray-400" />
                       </div>
                       <div>
-                        <p className="text-gray-200 font-medium">{vehicle.user.name}</p>
-                        <p className="text-sm text-gray-500">{vehicle.user.email}</p>
+                        <p className="text-gray-200 font-medium">{vehicle.owner?.name ?? 'Unknown'}</p>
+                        <p className="text-sm text-gray-500">{vehicle.owner?.email ?? '—'}</p>
                       </div>
                     </div>
                   </td>
