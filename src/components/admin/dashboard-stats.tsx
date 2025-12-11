@@ -81,18 +81,6 @@ const statCards = [
 export default function DashboardStats({ stats }: DashboardStatsProps) {
   const [animatedValues, setAnimatedValues] = useState(stats)
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setAnimatedValues(prev => ({
-  //       ...prev,
-  //       todaysAppointments: stats.todaysAppointments,
-  //       pendingAppointments: stats.pendingAppointments,
-  //       totalRevenue: stats.totalRevenue
-  //     }))
-  //   }, 5000)
-
-  //   return () => clearInterval(interval)
-  // }, [stats])
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">

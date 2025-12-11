@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/prisma.db'
 import AdminHeader from '@/components/admin/admin-header'
 import AdminSidebar from '@/components/admin/admin-sidebar'
-import ServicesManager from '@/components/admin/services-manager'
+import ServicesManager from '@/components/admin/admin-sidebar/services-manager'
 
 export default async function ServicesPage() {
   const user = await currentUser()
