@@ -17,15 +17,67 @@ import {
 } from 'lucide-react'
 import { SignOutButton } from '@clerk/nextjs'
 
-const navItems = [
-  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/admin/appointments', label: 'Appointments', icon: Calendar },
-  { href: '/admin/services', label: 'Services', icon: Wrench },
-  { href: '/admin/vehicles', label: 'Vehicles', icon: Car },
-  { href: '/admin/users', label: 'Users', icon: Users },
-  { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
-  { href: '/admin/settings', label: 'Settings', icon: Settings },
+interface NavItem {
+  href: string
+  label: string
+  icon: string
+  description?: string
+}
+
+const navItems: NavItem[] = [
+  {
+    href: '/admin',
+    label: 'Dashboard',
+    icon: 'LayoutDashboard',
+    description: 'Overview of your service center'
+  },
+  {
+    href: '/admin/appointments',
+    label: 'Appointments',
+    icon: 'Calendar',
+    description: 'Manage all appointments'
+  },
+  {
+    href: '/admin/services',
+    label: 'Services',
+    icon: 'Wrench',
+    description: 'Manage service offerings'
+  },
+  {
+    href: '/admin/vehicles',
+    label: 'Vehicles',
+    icon: 'Car',
+    description: 'View registered vehicles'
+  },
+  {
+    href: '/admin/users',
+    label: 'Users',
+    icon: 'Users',
+    description: 'Manage customer accounts'
+  },
+  {
+    href: '/admin/analytics',
+    label: 'Analytics',
+    icon: 'BarChart3',
+    description: 'Business insights & reports'
+  },
+  {
+    href: '/admin/settings',
+    label: 'Settings',
+    icon: 'Settings',
+    description: 'System configuration'
+  },
 ]
+
+const iconMap: Record<string, React.ComponentType<any>> = {
+  LayoutDashboard: LayoutDashboard,
+  Calendar: Calendar,
+  Wrench: Wrench,
+  Car: Car,
+  Users: Users,
+  BarChart3: BarChart3,
+  Settings: Settings,
+}
 
 export default function AdminSidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -37,12 +89,14 @@ export default function AdminSidebar() {
       bg-black backdrop-blur-sm border-r border-gray-800
       ${isCollapsed ? 'w-20' : 'w-64'} 
       transition-all duration-300 ease-in-out
+      flex flex-col
     `}>
-      <div className="p-4">
+      <div className="flex-1 overflow-y-auto p-4">
         {/* Collapse Toggle */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="w-full mb-6 p-3 bg-gray-800/50 hover:bg-gray-800 rounded-xl flex items-center justify-center transition-colors group"
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {isCollapsed ? (
             <Menu className="w-5 h-5 text-gray-400 group-hover:text-white" />
@@ -54,48 +108,63 @@ export default function AdminSidebar() {
         {/* Navigation */}
         <nav className="space-y-1">
           {navItems.map((item) => {
-            const Icon = item.icon
-            const isActive = pathname === item.href
+            const Icon = iconMap[item.icon]
+            const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 className={`
-                  flex items-center gap-3 p-3 rounded-xl transition-all
+                  flex items-center gap-3 p-3 rounded-xl transition-all group
                   ${isActive
                     ? 'bg-gray-900 text-white border border-gray-500/10'
                     : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
                   }
                 `}
+                title={isCollapsed ? `${item.label} - ${item.description}` : ''}
               >
                 <Icon className={`w-5 h-5 ${isActive ? 'text-gray-200' : ''}`} />
                 {!isCollapsed && (
-                  <span className="font-medium">{item.label}</span>
+                  <div className="flex flex-col flex-1 min-w-0">
+                    <span className="font-medium truncate">{item.label}</span>
+                    {item.description && (
+                      <span className="text-xs text-gray-500 truncate">
+                        {item.description}
+                      </span>
+                    )}
+                  </div>
                 )}
               </Link>
             )
           })}
         </nav>
+      </div>
 
-        {/* Divider */}
-        <div className="my-6 border-t border-gray-800"></div>
-
-        {/* Sign Out */}
-        {!isCollapsed && (
-          <div className="p-3 bg-gray-800/30 rounded-xl">
-            <SignOutButton>
-              <button className="flex items-center gap-3 w-full p-2 text-gray-400 hover:text-red-400 transition-colors">
-                <LogOut className="w-5 h-5" />
+      {/* Bottom Section */}
+      <div className="border-t border-gray-800 p-4">
+        {/* Sign Out - Always visible but adapts to collapsed state */}
+        <div className={`${isCollapsed ? 'flex justify-center' : ''}`}>
+          <SignOutButton>
+            <button
+              className={`
+                flex items-center gap-3 p-2 rounded-lg transition-colors
+                text-gray-400 hover:text-red-400 hover:bg-gray-800/50
+                ${isCollapsed ? 'w-12 h-12 justify-center' : 'w-full'}
+              `}
+              title={isCollapsed ? "Sign Out" : ""}
+            >
+              <LogOut className="w-5 h-5" />
+              {!isCollapsed && (
                 <span className="font-medium">Sign Out</span>
-              </button>
-            </SignOutButton>
-          </div>
-        )}
+              )}
+            </button>
+          </SignOutButton>
+        </div>
 
-        {/* Version Info */}
+        {/* Version Info - Only show when not collapsed */}
         {!isCollapsed && (
-          <div className="absolute bottom-6 left-4 right-4">
+          <div className="mt-4 pt-4 border-t border-gray-800">
             <p className="text-xs text-gray-500 text-center">
               v2.0 • AutoCare Pro
             </p>
