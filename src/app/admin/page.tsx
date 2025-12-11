@@ -6,17 +6,16 @@ import AdminSidebar from '@/components/admin/admin-sidebar'
 import DashboardStats from '@/components/admin/dashboard-stats'
 import RecentAppointments from '@/components/admin/recent-appointments'
 import QuickActions from '@/components/admin/quick-actions'
+import RecentUser from '@/components/admin/recent-user'
 
 const AdminDashboard = async () => {
 
   const user = await currentUser()
 
-  // Redirect if not authenticated
   if (!user) {
     redirect('/sign-in')
   }
 
-  // Check admin role using metadata
   const role = user.publicMetadata?.role
   if (role !== 'admin') {
     redirect('/dashboard')
@@ -122,30 +121,7 @@ const AdminDashboard = async () => {
               <QuickActions />
 
               {/* Recent Users */}
-              <div className="bg-gray-900/50 backdrop-blur-sm rounded-2xl border border-gray-800 p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">
-                  Recent Users
-                </h3>
-                <div className="space-y-3">
-                  {users.slice(0, 5).map((user) => (
-                    <div
-                      key={user.id}
-                      className="flex items-center justify-between p-3 rounded-lg bg-gray-800/30 hover:bg-gray-800/50 transition-colors"
-                    >
-                      <div>
-                        <p className="font-medium text-white">{user.name}</p>
-                        <p className="text-sm text-gray-400 truncate">{user.email}</p>
-                      </div>
-                      <span className="text-xs text-gray-500">
-                        {new Date(user.createdAt).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric'
-                        })}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <RecentUser users={users} />
             </div>
           </div>
         </main>
