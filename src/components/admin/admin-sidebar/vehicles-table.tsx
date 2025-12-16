@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { Vehicle, User } from '@prisma/client'
-import { Car, UserCircle, Calendar, Fuel, Search, Filter, MoreVertical } from 'lucide-react'
+import { Car, UserCircle, Calendar, Fuel, Search, Filter, MoreVertical } from 'lucide-react';
+import { getMostCommonMake } from '@/app/_lib/utils/getMostCommonMake';
 
 interface VehicleWithUser extends Vehicle {
   owner: User
@@ -84,18 +85,7 @@ export default function VehiclesTable({ vehicles }: VehiclesTableProps) {
         <div className="bg-gray-900/50 rounded-xl p-4 border border-gray-800">
           <p className="text-gray-400 text-sm">Most Common Make</p>
           <p className="text-2xl font-bold text-white mt-2">
-            {(() => {
-              const makeCounts = vehicles.reduce((acc, v) => {
-                acc[v.make] = (acc[v.make] || 0) + 1
-                return acc
-              }, {} as Record<string, number>)
-
-              const mostCommon = Object.entries(makeCounts).reduce((a, b) =>
-                a[1] > b[1] ? a : b
-              )
-
-              return mostCommon?.[0] || 'N/A'
-            })()}
+            {getMostCommonMake(vehicles)}
           </p>
         </div>
       </div>
@@ -160,7 +150,7 @@ export default function VehiclesTable({ vehicles }: VehiclesTableProps) {
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-gray-500" />
                       <span className="text-gray-300">
-                        {new Date(vehicle.createdAt).toLocaleDateString()}
+                        {new Date(vehicle.createdAt).toISOString().split("T")[0]}
                       </span>
                     </div>
                   </td>

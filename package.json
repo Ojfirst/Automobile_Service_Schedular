@@ -12,11 +12,10 @@
 	"dependencies": {
 		"@clerk/nextjs": "^6.35.5",
 		"@headlessui/react": "^2.2.9",
-		"@prisma/client": "^6.19.0",
+		"@prisma/client": "^6.19.1",
 		"@react-email/components": "^1.0.1",
 		"lucide-react": "^0.555.0",
 		"next": "16.0.1",
-		"prisma": "^6.19.0",
 		"react": "19.2.0",
 		"react-dom": "19.2.0",
 		"resend": "^6.5.2",
@@ -30,6 +29,7 @@
 		"baseline-browser-mapping": "^2.8.32",
 		"eslint": "^9",
 		"eslint-config-next": "16.0.1",
+		"prisma": "^6.19.1",
 		"tailwindcss": "^4",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.9.3"
