@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { NavItem } from '@/app/_lib/utils/admin-navigation';
+import { adminNavItems } from '@/app/_lib/utils/admin-navigation';
 import {
   LayoutDashboard,
   Calendar,
@@ -10,6 +12,7 @@ import {
   Car,
   Users,
   BarChart3,
+  Package,
   Settings,
   Menu,
   ChevronLeft,
@@ -17,57 +20,65 @@ import {
 } from 'lucide-react'
 import { SignOutButton } from '@clerk/nextjs'
 
-interface NavItem {
-  href: string
-  label: string
-  icon: string
-  description?: string
-}
+// interface NavItem {
+//   href: string
+//   label: string
+//   icon: string
+//   description?: string
+// }
 
-const navItems: NavItem[] = [
-  {
-    href: '/admin',
-    label: 'Dashboard',
-    icon: 'LayoutDashboard',
-    description: 'Overview of your service center'
-  },
-  {
-    href: '/admin/appointments',
-    label: 'Appointments',
-    icon: 'Calendar',
-    description: 'Manage all appointments'
-  },
-  {
-    href: '/admin/services',
-    label: 'Services',
-    icon: 'Wrench',
-    description: 'Manage service offerings'
-  },
-  {
-    href: '/admin/vehicles',
-    label: 'Vehicles',
-    icon: 'Car',
-    description: 'View registered vehicles'
-  },
-  {
-    href: '/admin/users',
-    label: 'Users',
-    icon: 'Users',
-    description: 'Manage customer accounts'
-  },
-  {
-    href: '/admin/analytics',
-    label: 'Analytics',
-    icon: 'BarChart3',
-    description: 'Business insights & reports'
-  },
-  {
-    href: '/admin/settings',
-    label: 'Settings',
-    icon: 'Settings',
-    description: 'System configuration'
-  },
-]
+// const navItems: NavItem[] = [
+//   {
+//     href: '/admin',
+//     label: 'Dashboard',
+//     icon: 'LayoutDashboard',
+//     description: 'Overview of your service center'
+//   },
+//   {
+//     href: '/admin/appointments',
+//     label: 'Appointments',
+//     icon: 'Calendar',
+//     description: 'Manage all appointments'
+//   },
+//   {
+//     href: '/admin/services',
+//     label: 'Services',
+//     icon: 'Wrench',
+//     description: 'Manage service offerings'
+//   },
+//   {
+//     href: '/admin/vehicles',
+//     label: 'Vehicles',
+//     icon: 'Car',
+//     description: 'View registered vehicles'
+//   },
+//   {
+//     href: '/admin/users',
+//     label: 'Users',
+//     icon: 'Users',
+//     description: 'Manage customer accounts'
+//   },
+//   {
+//     href: '/admin/inventory',
+//     label: 'Inventory',
+//     icon: 'Package',
+//     description: 'Manage spare parts and stock',
+//   },
+//   {
+//     href: '/admin/analytics',
+//     label: 'Analytics',
+//     icon: 'BarChart3',
+//     description: 'Business insights & reports'
+//   },
+//   {
+//     href: '/admin/settings',
+//     label: 'Settings',
+//     icon: 'Settings',
+//     description: 'System configuration'
+//   },
+// ]
+
+const navItems: NavItem[] = adminNavItems;
 
 const iconMap: Record<string, React.ComponentType<any>> = {
   LayoutDashboard: LayoutDashboard,
@@ -76,6 +87,7 @@ const iconMap: Record<string, React.ComponentType<any>> = {
   Car: Car,
   Users: Users,
   BarChart3: BarChart3,
+  Package: Package,
   Settings: Settings,
 }
 

@@ -42,6 +42,13 @@ export const adminNavItems: NavItem[] = [
 		icon: 'BarChart3',
 		description: 'Business insights & reports',
 	},
+	// Add to navItems array:
+	{
+		href: '/admin/inventory',
+		label: 'Inventory',
+		icon: 'Package',
+		description: 'Manage spare parts and stock',
+	},
 	{
 		href: '/admin/settings',
 		label: 'Settings',
