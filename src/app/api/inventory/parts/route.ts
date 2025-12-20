@@ -13,6 +13,8 @@ export async function GET(request: NextRequest) {
 		const { searchParams } = new URL(request.url);
 		const category = searchParams.get('category');
 		const search = searchParams.get('search');
+		const page = parseInt(searchParams.get('page') || '1');
+		const limit = parseInt(searchParams.get('limit') || '50');
 
 		const where: any = {};
 
@@ -28,15 +30,31 @@ export async function GET(request: NextRequest) {
 			];
 		}
 
-		const parts = await prisma.part.findMany({
-			where,
-			include: {
-				supplier: true,
-			},
-			orderBy: { name: 'asc' },
-		});
+		const [parts, total] = await Promise.all([
+			prisma.part.findMany({
+				where,
+				include: {
+					supplier: true,
+					_count: {
+						select: {
+							transactions: true,
+							services: true,
+						},
+					},
+				},
+				orderBy: { name: 'asc' },
+				skip: (page - 1) * limit,
+				take: limit,
+			}),
+			prisma.part.count({ where }),
+		]);
 
-		return NextResponse.json(parts);
+		return NextResponse.json({
+			parts,
+			total,
+			page,
+			totalPages: Math.ceil(total / limit),
+		});
 	} catch (error) {
 		console.error('Error fetching parts:', error);
 		return NextResponse.json(
@@ -55,6 +73,14 @@ export async function POST(request: NextRequest) {
 		}
 
 		const data = await request.json();
+
+		// Validate required fields
+		if (!data.name || !data.partNumber || !data.category) {
+			return NextResponse.json(
+				{ error: 'Missing required fields' },
+				{ status: 400 }
+			);
+		}
 
 		const part = await prisma.part.create({
 			data: {
