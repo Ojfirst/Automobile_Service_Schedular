@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { NavItem } from '@/app/_lib/utils/admin-navigation';
+import { NavItem, IconName } from '@/app/_lib/utils/admin-navigation';
 import { adminNavItems } from '@/app/_lib/utils/admin-navigation';
 import {
   LayoutDashboard,
@@ -20,67 +20,10 @@ import {
 } from 'lucide-react'
 import { SignOutButton } from '@clerk/nextjs'
 
-// interface NavItem {
-//   href: string
-//   label: string
-//   icon: string
-//   description?: string
-// }
-
-// const navItems: NavItem[] = [
-//   {
-//     href: '/admin',
-//     label: 'Dashboard',
-//     icon: 'LayoutDashboard',
-//     description: 'Overview of your service center'
-//   },
-//   {
-//     href: '/admin/appointments',
-//     label: 'Appointments',
-//     icon: 'Calendar',
-//     description: 'Manage all appointments'
-//   },
-//   {
-//     href: '/admin/services',
-//     label: 'Services',
-//     icon: 'Wrench',
-//     description: 'Manage service offerings'
-//   },
-//   {
-//     href: '/admin/vehicles',
-//     label: 'Vehicles',
-//     icon: 'Car',
-//     description: 'View registered vehicles'
-//   },
-//   {
-//     href: '/admin/users',
-//     label: 'Users',
-//     icon: 'Users',
-//     description: 'Manage customer accounts'
-//   },
-//   {
-//     href: '/admin/inventory',
-//     label: 'Inventory',
-//     icon: 'Package',
-//     description: 'Manage spare parts and stock',
-//   },
-//   {
-//     href: '/admin/analytics',
-//     label: 'Analytics',
-//     icon: 'BarChart3',
-//     description: 'Business insights & reports'
-//   },
-//   {
-//     href: '/admin/settings',
-//     label: 'Settings',
-//     icon: 'Settings',
-//     description: 'System configuration'
-//   },
-// ]
 
 const navItems: NavItem[] = adminNavItems;
 
-const iconMap: Record<string, React.ComponentType<any>> = {
+const iconMap: Record<IconName, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
   LayoutDashboard: LayoutDashboard,
   Calendar: Calendar,
   Wrench: Wrench,
@@ -120,7 +63,7 @@ export default function AdminSidebar() {
         {/* Navigation */}
         <nav className="space-y-1">
           {navItems.map((item) => {
-            const Icon = iconMap[item.icon]
+            const Icon = iconMap[item.icon] ?? LayoutDashboard
             const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
 
             return (

@@ -1,7 +1,19 @@
+export const ICON_NAMES = [
+	'LayoutDashboard',
+	'Calendar',
+	'Wrench',
+	'Car',
+	'Users',
+	'BarChart3',
+	'Package',
+	'Settings',
+] as const;
+export type IconName = (typeof ICON_NAMES)[number];
+
 export interface NavItem {
 	href: string;
 	label: string;
-	icon: string;
+	icon: IconName;
 	description?: string;
 }
 
