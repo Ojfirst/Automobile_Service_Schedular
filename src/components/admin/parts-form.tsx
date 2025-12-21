@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Part, Supplier } from '@prisma/client'
 import { Save, X, Package, DollarSign, Hash, Tag, MapPin, Building } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface PartsFormProps {
   part?: Part
@@ -42,12 +43,12 @@ export default function PartsForm({ part, suppliers, onSuccess, onCancel }: Part
         body: JSON.stringify(formData),
       })
 
-      if (!response.ok) throw new Error('Failed to save part')
+      if (!response.ok) throw new Error(response.statusText)
 
       if (onSuccess) onSuccess()
     } catch (error) {
       console.error('Error saving part:', error)
-      alert('Failed to save part. Please try again.')
+      toast.error(error instanceof Error ? error.message : 'An unexpected error occurred')
     } finally {
       setIsSubmitting(false)
     }
@@ -281,8 +282,8 @@ export default function PartsForm({ part, suppliers, onSuccess, onCancel }: Part
             <div className="flex justify-between">
               <span className="text-gray-400">Stock Status:</span>
               <span className={`font-medium ${formData.stock === 0 ? 'text-red-400' :
-                  formData.stock <= formData.minStock ? 'text-yellow-400' :
-                    'text-green-400'
+                formData.stock <= formData.minStock ? 'text-yellow-400' :
+                  'text-green-400'
                 }`}>
                 {formData.stock === 0 ? 'Out of Stock' :
                   formData.stock <= formData.minStock ? 'Low Stock' :

@@ -3,7 +3,7 @@ import { currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/prisma.db'
 import InventoryDashboard from '@/components/admin/inventory-dashboard'
-import InventoryStats from '@/components/admin/dashboard-stats';
+import InventoryStats from '@/components/admin/inventory-stats';
 import { Skeleton } from '@/components/ui/skeleton'
 
 export const metadata = {

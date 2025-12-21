@@ -72,22 +72,41 @@ export async function POST(request: NextRequest) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
-		const data = await request.json();
+		const payload = await request.json();
+
+		// Extract supplierId and numeric fields so we can shape the create input properly
+		const { supplierId, price, cost, stock, minStock, maxStock, ...rest } =
+			payload;
 
 		// Validate required fields
-		if (!data.name || !data.partNumber || !data.category) {
+		if (!rest.name || !rest.partNumber || !rest.category) {
 			return NextResponse.json(
 				{ error: 'Missing required fields' },
 				{ status: 400 }
 			);
 		}
 
-		const part = await prisma.part.create({
-			data: {
-				...data,
-				createdBy: user.id,
-			},
-		});
+		// Coerce numeric fields if provided
+		const numericData: any = {};
+		if (price !== undefined) numericData.price = Number(price);
+		if (cost !== undefined) numericData.cost = Number(cost);
+		if (stock !== undefined) numericData.stock = Number(stock);
+		if (minStock !== undefined) numericData.minStock = Number(minStock);
+		if (maxStock !== undefined) numericData.maxStock = Number(maxStock);
+
+		// Build create input
+		const createData: any = {
+			...rest,
+			...numericData,
+			createdBy: user.id,
+		};
+
+		// If supplierId is provided and non-empty, use nested connect
+		if (supplierId) {
+			createData.supplier = { connect: { id: supplierId } };
+		}
+
+		const part = await prisma.part.create({ data: createData });
 
 		return NextResponse.json(part, { status: 201 });
 	} catch (error) {
