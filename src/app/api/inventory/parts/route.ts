@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/prisma.db';
+import { Prisma } from '@prisma/client';
 import { currentUser } from '@clerk/nextjs/server';
 
 // GET all parts
@@ -16,7 +17,7 @@ export async function GET(request: NextRequest) {
 		const page = parseInt(searchParams.get('page') || '1');
 		const limit = parseInt(searchParams.get('limit') || '50');
 
-		const where: any = {};
+		const where: Prisma.PartWhereInput = {};
 
 		if (category && category !== 'all') {
 			where.category = category;
@@ -65,46 +66,87 @@ export async function GET(request: NextRequest) {
 }
 
 // POST create new part
-export async function POST(request: NextRequest) {
+export const POST = async (request: NextRequest) => {
 	try {
 		const user = await currentUser();
 		if (!user || user.publicMetadata?.role !== 'admin') {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
-		const payload = await request.json();
+		const raw = await request.json();
 
-		// Extract supplierId and numeric fields so we can shape the create input properly
-		const { supplierId, price, cost, stock, minStock, maxStock, ...rest } =
-			payload;
+		if (!raw || typeof raw !== 'object') {
+			return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
+		}
+
+		const body = raw as Record<string, unknown>;
 
 		// Validate required fields
-		if (!rest.name || !rest.partNumber || !rest.category) {
+		if (!body.name || !body.partNumber || !body.category) {
 			return NextResponse.json(
 				{ error: 'Missing required fields' },
 				{ status: 400 }
 			);
 		}
 
-		// Coerce numeric fields if provided
-		const numericData: any = {};
-		if (price !== undefined) numericData.price = Number(price);
-		if (cost !== undefined) numericData.cost = Number(cost);
-		if (stock !== undefined) numericData.stock = Number(stock);
-		if (minStock !== undefined) numericData.minStock = Number(minStock);
-		if (maxStock !== undefined) numericData.maxStock = Number(maxStock);
-
-		// Build create input
-		const createData: any = {
-			...rest,
-			...numericData,
-			createdBy: user.id,
-		};
-
-		// If supplierId is provided and non-empty, use nested connect
-		if (supplierId) {
-			createData.supplier = { connect: { id: supplierId } };
+		// Validate numeric required fields: price and cost
+		if (body.price === undefined || body.cost === undefined) {
+			return NextResponse.json(
+				{ error: 'Missing required fields: price and cost' },
+				{ status: 400 }
+			);
 		}
+
+		const priceNum = Number(body.price);
+		const costNum = Number(body.cost);
+
+		if (Number.isNaN(priceNum) || Number.isNaN(costNum)) {
+			return NextResponse.json(
+				{ error: 'Invalid numeric values for price or cost' },
+				{ status: 400 }
+			);
+		}
+
+		if (priceNum < 0 || costNum < 0) {
+			return NextResponse.json(
+				{ error: 'Price and cost must be non-negative' },
+				{ status: 400 }
+			);
+		}
+
+		// Optional integer fields
+		const stockNum = body.stock !== undefined ? Number(body.stock) : undefined;
+		const minStockNum =
+			body.minStock !== undefined ? Number(body.minStock) : undefined;
+		const maxStockNum =
+			body.maxStock !== undefined ? Number(body.maxStock) : undefined;
+
+		const supplierId = body.supplierId ? String(body.supplierId) : undefined;
+
+		const createData: Prisma.PartCreateInput = {
+			name: String(body.name),
+			partNumber: String(body.partNumber),
+			category: String(body.category),
+			description: body.description ? String(body.description) : undefined,
+			manufacturer: body.manufacturer ? String(body.manufacturer) : undefined,
+			location: body.location ? String(body.location) : undefined,
+			price: priceNum,
+			cost: costNum,
+			stock:
+				stockNum !== undefined && !Number.isNaN(stockNum)
+					? Math.trunc(stockNum)
+					: undefined,
+			minStock:
+				minStockNum !== undefined && !Number.isNaN(minStockNum)
+					? Math.trunc(minStockNum)
+					: undefined,
+			maxStock:
+				maxStockNum !== undefined && !Number.isNaN(maxStockNum)
+					? Math.trunc(maxStockNum)
+					: undefined,
+			createdBy: user.id,
+			supplier: supplierId ? { connect: { id: supplierId } } : undefined,
+		};
 
 		const part = await prisma.part.create({ data: createData });
 
@@ -116,4 +158,4 @@ export async function POST(request: NextRequest) {
 			{ status: 500 }
 		);
 	}
-}
+};

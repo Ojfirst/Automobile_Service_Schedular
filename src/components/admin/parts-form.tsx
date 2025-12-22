@@ -43,7 +43,11 @@ export default function PartsForm({ part, suppliers, onSuccess, onCancel }: Part
         body: JSON.stringify(formData),
       })
 
-      if (!response.ok) throw new Error(response.statusText)
+      if (!response.ok) {
+        throw new Error(response.statusText)
+      } else {
+        toast.success(`Part ${part ? 'updated' : 'created'} successfully!`)
+      }
 
       if (onSuccess) onSuccess()
     } catch (error) {
