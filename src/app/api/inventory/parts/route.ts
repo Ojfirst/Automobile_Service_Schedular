@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/prisma.db';
-import { Prisma } from '@prisma/client';
 import { currentUser } from '@clerk/nextjs/server';
+import { Prisma } from '@prisma/client';
 
 // GET all parts
 export async function GET(request: NextRequest) {
@@ -73,82 +73,43 @@ export const POST = async (request: NextRequest) => {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
-		const raw = await request.json();
+		const payload = await request.json();
 
-		if (!raw || typeof raw !== 'object') {
-			return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
-		}
-
-		const body = raw as Record<string, unknown>;
+		// Extract supplierId and numeric fields so we can shape the create input properly
+		const { supplierId, price, cost, stock, minStock, maxStock, ...rest } =
+			payload;
 
 		// Validate required fields
-		if (!body.name || !body.partNumber || !body.category) {
+		if (!rest.name || !rest.partNumber || !rest.category) {
 			return NextResponse.json(
 				{ error: 'Missing required fields' },
 				{ status: 400 }
 			);
 		}
 
-		// Validate numeric required fields: price and cost
-		if (body.price === undefined || body.cost === undefined) {
-			return NextResponse.json(
-				{ error: 'Missing required fields: price and cost' },
-				{ status: 400 }
-			);
-		}
+		// Coerce numeric fields if provided
+		const numericData: Record<string, number> = {};
+		if (price !== undefined) numericData.price = Number(price);
+		if (cost !== undefined) numericData.cost = Number(cost);
+		if (stock !== undefined) numericData.stock = Number(stock);
+		if (minStock !== undefined) numericData.minStock = Number(minStock);
+		if (maxStock !== undefined) numericData.maxStock = Number(maxStock);
 
-		const priceNum = Number(body.price);
-		const costNum = Number(body.cost);
-
-		if (Number.isNaN(priceNum) || Number.isNaN(costNum)) {
-			return NextResponse.json(
-				{ error: 'Invalid numeric values for price or cost' },
-				{ status: 400 }
-			);
-		}
-
-		if (priceNum < 0 || costNum < 0) {
-			return NextResponse.json(
-				{ error: 'Price and cost must be non-negative' },
-				{ status: 400 }
-			);
-		}
-
-		// Optional integer fields
-		const stockNum = body.stock !== undefined ? Number(body.stock) : undefined;
-		const minStockNum =
-			body.minStock !== undefined ? Number(body.minStock) : undefined;
-		const maxStockNum =
-			body.maxStock !== undefined ? Number(body.maxStock) : undefined;
-
-		const supplierId = body.supplierId ? String(body.supplierId) : undefined;
-
-		const createData: Prisma.PartCreateInput = {
-			name: String(body.name),
-			partNumber: String(body.partNumber),
-			category: String(body.category),
-			description: body.description ? String(body.description) : undefined,
-			manufacturer: body.manufacturer ? String(body.manufacturer) : undefined,
-			location: body.location ? String(body.location) : undefined,
-			price: priceNum,
-			cost: costNum,
-			stock:
-				stockNum !== undefined && !Number.isNaN(stockNum)
-					? Math.trunc(stockNum)
-					: undefined,
-			minStock:
-				minStockNum !== undefined && !Number.isNaN(minStockNum)
-					? Math.trunc(minStockNum)
-					: undefined,
-			maxStock:
-				maxStockNum !== undefined && !Number.isNaN(maxStockNum)
-					? Math.trunc(maxStockNum)
-					: undefined,
+		// Build create input
+		const createDataBase = {
+			...rest,
+			...numericData,
 			createdBy: user.id,
-			supplier: supplierId ? { connect: { id: supplierId } } : undefined,
 		};
 
-		const part = await prisma.part.create({ data: createData });
+		// Compose final data object (add nested supplier connect only if provided)
+		const createData = supplierId
+			? { ...createDataBase, supplier: { connect: { id: supplierId } } }
+			: createDataBase;
+
+		const part = await prisma.part.create({
+			data: createData as Prisma.PartCreateInput,
+		});
 
 		return NextResponse.json(part, { status: 201 });
 	} catch (error) {
