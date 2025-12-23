@@ -2,10 +2,10 @@ import { prisma } from "@/prisma.db";
 
 import Link from "next/link";
 
-const VehiclesDB = async ({ clerkUserId }: { clerkUserId: string }) => {
+const VehiclesDB = async ({ userId }: { userId: string }) => {
 
   const vehicles = await prisma.vehicle.findMany({
-    where: { clerkUserId: clerkUserId },
+    where: { ownerId: userId },
     orderBy: { createdAt: 'desc' }
   })
 

@@ -66,7 +66,7 @@ const POST = async (req: Request) => {
 
 		// Check if Vehicle is User's
 		const isVehicle = await prisma.vehicle.findFirst({
-			where: { id: vehicleId, clerkUserId: user.id },
+			where: { id: vehicleId, ownerId: dbUser.id },
 		});
 
 		if (!isVehicle) {

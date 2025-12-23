@@ -30,7 +30,7 @@ export default async function Dashboard() {
   }
 
   const vehicles = await prisma.vehicle.findMany({
-    where: { clerkUserId: user.id },
+    where: { ownerId: dbUser.id },
     orderBy: { createdAt: 'desc' }
   })
 
@@ -122,7 +122,7 @@ export default async function Dashboard() {
           <div className="bg-gray-800 rounded-lg shadow">
             <AddVehcileLink />
             <Suspense fallback={<Loading />}>
-              <VehiclesDB clerkUserId={user.id} />
+              <VehiclesDB userId={dbUser.id} />
             </Suspense>
           </div>
 

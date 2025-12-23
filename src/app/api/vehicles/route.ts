@@ -27,7 +27,7 @@ export async function GET() {
 		}
 
 		const vehicles = await prisma.vehicle.findMany({
-			where: { clerkUserId: user.id },
+			where: { ownerId: dbUser.id },
 			orderBy: { createdAt: 'desc' },
 		});
 
@@ -53,8 +53,8 @@ export const POST = async (req: Request) => {
 		const { make, model, year, vin } = await req.json();
 		if (!make || !model || !year) {
 			return NextResponse.json(
-				{ error: 'Vehcile make, model and year is require' },
-				{ status: 404 }
+				{ error: 'Vehicle make, model and year is required' },
+				{ status: 400 }
 			);
 		}
 
@@ -74,21 +74,27 @@ export const POST = async (req: Request) => {
 
 		const vinValid = vin && vin.trim() !== '' ? vin : null;
 
+		const yearNumber = Number(year);
+		if (Number.isNaN(yearNumber)) {
+			return NextResponse.json(
+				{ error: 'Year must be a valid number' },
+				{ status: 400 }
+			);
+		}
+
 		const vehicle = await prisma.vehicle.create({
 			data: {
 				make,
 				model,
-				year: parseInt(year),
+				year: Math.floor(yearNumber),
 				vin: vinValid,
-				clerkUserId: user.id,
-				owner: {
-					connect: { clerkUserId: user.id },
-				},
+				ownerId: dbUser.id,
+				// removed nested owner connect to satisfy prisma types
 			},
 		});
 		return NextResponse.json(vehicle);
 	} catch (error) {
-		console.error('Erro creating vehicle', error);
+		console.error('Error creating vehicle', error);
 		return NextResponse.json(
 			{ error: 'Internal Server Error' },
 			{ status: 500 }

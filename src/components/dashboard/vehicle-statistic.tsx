@@ -29,7 +29,7 @@ const VehicleStats = async ({ user }: { user: User | null }) => {
 
   // Fetch user's vehicles
   const vehicles = await prisma.vehicle.findMany({
-    where: { clerkUserId: user.id },
+    where: { ownerId: dbUser.id },
     orderBy: { createdAt: 'desc' }
   })
 
