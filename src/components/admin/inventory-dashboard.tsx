@@ -2,12 +2,13 @@
 
 import { useState } from 'react'
 import { Part, Supplier, InventoryTransaction } from '@prisma/client'
-import { Package, AlertTriangle, TrendingUp, Plus, Search, Download, BarChart3 } from 'lucide-react'
+import { Package, AlertTriangle, TrendingUp, Plus, Search, Download, BarChart3, Building, DollarSignIcon, ToolCaseIcon, Eye } from 'lucide-react'
 import PartsTable from './parts-table'
 import LowStockAlert from './low-stock-alert'
 import InventoryChart from './inventory-chart'
 import TransactionHistory from './transaction-history'
 import PartsForm from './parts-form'
+import SupplierForm from './supplier-form'
 
 interface PartWithDetails extends Part {
   supplier: Supplier | null
@@ -44,6 +45,7 @@ export default function InventoryDashboard({
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [showPartsForm, setShowPartsForm] = useState(false)
+  const [showSupplierForm, setShowSupplierForm] = useState(false)
   const [activeTab, setActiveTab] = useState('overview')
 
   // Get unique categories
@@ -66,6 +68,12 @@ export default function InventoryDashboard({
     window.location.reload()
   }
 
+  const handleAddSupplierSuccess = () => {
+    setShowSupplierForm(false)
+    // In a real app, you would refresh the data here
+    window.location.reload()
+  }
+
   return (
     <div className="space-y-6">
       {/* Tabs */}
@@ -77,6 +85,7 @@ export default function InventoryDashboard({
             : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
             }`}
         >
+          <Eye className="w-4 h-4 inline mr-2" />
           Overview
         </button>
         <button
@@ -86,7 +95,8 @@ export default function InventoryDashboard({
             : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
             }`}
         >
-          Parts ({parts.length})
+          <ToolCaseIcon className="w-4 h-4 inline mr-2" />
+          Parts ({parts?.length || 0})
         </button>
         <button
           onClick={() => setActiveTab('transactions')}
@@ -95,6 +105,7 @@ export default function InventoryDashboard({
             : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
             }`}
         >
+          <DollarSignIcon className="w-4 h-4 inline mr-2" />
           Transactions
         </button>
         <button
@@ -104,6 +115,7 @@ export default function InventoryDashboard({
             : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
             }`}
         >
+          <Building className="w-4 h-4 inline mr-2" />
           Suppliers ({suppliers?.length || 0})
         </button>
       </div>
@@ -128,6 +140,30 @@ export default function InventoryDashboard({
                 suppliers={suppliers}
                 onSuccess={handleAddPartSuccess}
                 onCancel={() => setShowPartsForm(false)}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showSupplierForm && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 rounded-2xl border border-gray-800 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-800">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-gray-200">Add New Supplier</h2>
+                <button
+                  onClick={() => setShowSupplierForm(false)}
+                  className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  <span className="text-gray-400 hover:text-white">✕</span>
+                </button>
+              </div>
+            </div>
+            <div className="p-6">
+              <SupplierForm
+                onSuccess={handleAddSupplierSuccess}
+                onCancel={() => setShowSupplierForm(false)}
               />
             </div>
           </div>
@@ -293,7 +329,10 @@ export default function InventoryDashboard({
                   Manage your parts suppliers and contact information
                 </p>
               </div>
-              <button className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+              <button
+                onClick={() => setShowSupplierForm(true)} // Update this
+                className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              >
                 <Plus className="w-5 h-5" />
                 Add Supplier
               </button>

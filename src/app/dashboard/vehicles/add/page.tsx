@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { carBrands } from '@/app/_lib/utils/help';
+import { toast } from 'sonner';
 
 export default function AddVehiclePage() {
   const router = useRouter()
@@ -30,15 +31,18 @@ export default function AddVehiclePage() {
       })
 
       if (response.ok) {
-        router.push('/dashboard')
-        router.refresh() // Refresh the dashboard to show new vehicle
+        toast.success('Vehicle added successfully!');
+        router.push('/dashboard');
+        router.refresh();
       } else {
         const error = await response.json()
-        alert(error.error || 'Failed to add vehicle')
+        toast.error(error.error || 'Failed to add vehicle')
       }
     } catch (error) {
-      console.error('Error adding vehicle:', error)
-      alert('Failed to add vehicle')
+      if (error instanceof Error) {
+        toast.error(error.message)
+        console.error('Error adding vehicle:', error)
+      }
     } finally {
       setIsLoading(false)
     }
