@@ -34,6 +34,14 @@ export default function PartsForm({ part, suppliers, onSuccess, onCancel }: Part
     setIsSubmitting(true)
 
     try {
+      // If we're editing, ensure the part has an id
+      if (part && !part.id) {
+        console.error('Attempted to update part but `part.id` is missing', { part })
+        toast.error('Unable to update: missing part id')
+        setIsSubmitting(false)
+        return
+      }
+
       const url = part ? `/api/inventory/parts/${part.id}` : '/api/inventory/parts'
       const method = part ? 'PUT' : 'POST'
 

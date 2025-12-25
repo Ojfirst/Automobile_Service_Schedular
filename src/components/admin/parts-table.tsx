@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import type { Part, Supplier } from '@prisma/client'
-import { Package, AlertTriangle, Edit2, ExternalLink, MoreVertical } from 'lucide-react'
+import { Package, AlertTriangle, Edit2, ExternalLink, MoreVertical } from 'lucide-react';
+import PartsForm from './parts-form';
 
 interface PartWithDetails extends Part {
   supplier: Supplier | null
@@ -19,6 +20,34 @@ type PartsTableProps = {
 
 export default function PartsTable({ parts, isLoading = false }: PartsTableProps) {
   const [selectedParts, setSelectedParts] = useState<string[]>([])
+  const [showPartsForm, setShowPartsForm] = useState<boolean>(false);
+  // currently editing part (null when creating a new part)
+  const [editingPart, setEditingPart] = useState<PartWithDetails | null>(null);
+
+  // suppliers list (non-null)
+  const editSuppliers = parts.map(part => part.supplier).filter((s): s is Supplier => !!s);
+
+  // open the parts form; pass a part to edit or nothing to create
+  const handleShowPartsForm = (part?: PartWithDetails) => {
+    setEditingPart(part ?? null);
+    setShowPartsForm(true);
+  }
+
+  // Render form when requested
+  const renderPartsForm = () => {
+    if (!showPartsForm) return null;
+
+    return (
+      <div className="p-6 border-b border-gray-800">
+        <PartsForm
+          part={editingPart ?? undefined}
+          suppliers={editSuppliers}
+          onCancel={() => { setShowPartsForm(false); setEditingPart(null); }}
+          onSuccess={() => { setShowPartsForm(false); setEditingPart(null); }}
+        />
+      </div>
+    );
+  }
 
   const getStockStatus = (stock: number, minStock: number) => {
     if (stock === 0) return { color: 'text-red-400', bg: 'bg-red-500/10', label: 'Out of Stock' }
@@ -87,6 +116,9 @@ export default function PartsTable({ parts, isLoading = false }: PartsTableProps
           </div>
         </div>
       </div>
+
+      {/* Parts form (create/edit) */}
+      {renderPartsForm()}
 
       {parts.length === 0 ? (
         <div className="p-8 text-center">
@@ -196,7 +228,7 @@ export default function PartsTable({ parts, isLoading = false }: PartsTableProps
                       <td className="p-4">
                         <div className="flex items-center gap-2">
                           <button
-                            onClick={() => console.log('Edit part:', part.id)}
+                            onClick={() => handleShowPartsForm(part)}
                             className="p-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors"
                             title="Edit part"
                           >

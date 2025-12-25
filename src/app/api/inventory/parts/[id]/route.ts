@@ -3,9 +3,7 @@ import { prisma } from '@/prisma.db';
 import { currentUser } from '@clerk/nextjs/server';
 
 interface RouteParams {
-	params: {
-		id: string;
-	};
+	params: Promise<{ id: string }>;
 }
 
 // GET single part
@@ -16,8 +14,10 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
+		const paramsId = await params;
+
 		const part = await prisma.part.findUnique({
-			where: { id: params.id },
+			where: { id: paramsId.id },
 			include: {
 				supplier: true,
 				transactions: {
@@ -54,10 +54,24 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
+		const paramsId = await params;
+
+		// Validate the route param early to avoid calling Prisma with undefined
+		if (!paramsId?.id) {
+			console.error('Missing route parameter `id` in PUT request', {
+				params,
+				url: request.url,
+			});
+			return NextResponse.json(
+				{ error: 'Missing id parameter' },
+				{ status: 400 }
+			);
+		}
+
 		const data = await request.json();
 
 		const part = await prisma.part.update({
-			where: { id: params.id },
+			where: { id: paramsId.id },
 			data,
 		});
 
@@ -79,8 +93,21 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
+		const paramsId = await params;
+
+		if (!paramsId?.id) {
+			console.error('Missing route parameter `id` in DELETE request', {
+				params,
+				url: request.url,
+			});
+			return NextResponse.json(
+				{ error: 'Missing id parameter' },
+				{ status: 400 }
+			);
+		}
+
 		await prisma.part.delete({
-			where: { id: params.id },
+			where: { id: paramsId.id },
 		});
 
 		return NextResponse.json({ success: true });
