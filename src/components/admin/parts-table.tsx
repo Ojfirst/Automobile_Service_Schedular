@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Part, Supplier } from '@prisma/client'
-import { Package, AlertTriangle, Edit2, Trash2, ExternalLink, MoreVertical } from 'lucide-react'
+import type { Part, Supplier } from '@prisma/client'
+import { Package, AlertTriangle, Edit2, ExternalLink, MoreVertical } from 'lucide-react'
 
 interface PartWithDetails extends Part {
   supplier: Supplier | null
@@ -12,7 +12,7 @@ interface PartWithDetails extends Part {
   }
 }
 
-interface PartsTableProps {
+type PartsTableProps = {
   parts: PartWithDetails[]
   isLoading?: boolean
 }
@@ -186,8 +186,8 @@ export default function PartsTable({ parts, isLoading = false }: PartsTableProps
                       <td className="p-4">
                         {part.supplier ? (
                           <div>
-                            <p className="text-gray-300 truncate">{part.supplier.name}</p>
-                            <p className="text-sm text-gray-500 truncate">{part.supplier.contactName}</p>
+                            <p className="text-gray-300 truncate">{part.supplier.name ?? 'No supplier name found'}</p>
+                            <p className="text-sm text-gray-500 truncate">{part.supplier.contactName ?? 'No contact name found'}</p>
                           </div>
                         ) : (
                           <span className="text-gray-500 text-sm">No supplier</span>

@@ -167,7 +167,7 @@ export default function PartsForm({ part, suppliers, onSuccess, onCancel }: Part
               onChange={(e) => setFormData({ ...formData, supplierId: e.target.value })}
               className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-300 focus:outline-none focus:border-blue-500"
             >
-              <option value="">No supplier</option>
+              <option value="">Select a supplier</option>
               {suppliers.map(supplier => (
                 <option key={supplier.id} value={supplier.id}>
                   {supplier.name} {supplier.contactName && `- ${supplier.contactName}`}

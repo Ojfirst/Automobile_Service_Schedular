@@ -18,7 +18,7 @@ interface PartWithDetails extends Part {
   }
 }
 
-interface InventoryDashboardProps {
+type InventoryDashboardProps = {
   parts: PartWithDetails[]
   lowStockParts: Part[]
   recentTransactions: (InventoryTransaction & { part: Part })[]
