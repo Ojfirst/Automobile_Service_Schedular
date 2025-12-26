@@ -1,10 +1,12 @@
 'use client'
 
+import { useRouter } from 'next/navigation';
+import { useAutoRevalidate } from '@/app/_lib/hooks/use-auto-revalidate';
 import { useState } from 'react'
 import type { Part, Supplier } from '@prisma/client'
 import { Package, AlertTriangle, Edit2, ExternalLink, MoreVertical } from 'lucide-react';
 import PartsForm from './parts-form';
-import AutoRefresh from '@/app/_lib/utils/auto-refresh';
+
 
 interface PartWithDetails extends Part {
   supplier: Supplier | null
@@ -24,6 +26,21 @@ export default function PartsTable({ parts, isLoading = false }: PartsTableProps
   const [showPartsForm, setShowPartsForm] = useState<boolean>(false);
   // currently editing part (null when creating a new part)
   const [editingPart, setEditingPart] = useState<PartWithDetails | null>(null);
+  const router = useRouter();
+
+
+  useAutoRevalidate({
+    interval: 15_000,
+    check: async () => {
+      const res = await fetch('/api/inventory/parts/dashboard/meta', { cache: 'no-store' });
+      const data = await res.json();
+      return data.lastUpdated as string | null;
+    },
+    onChange: () => {
+      // on change, refresh the router to fetch new parts data
+      router.refresh();
+    },
+  });
 
   // suppliers list (non-null)
   const editSuppliers = parts.map(part => part.supplier).filter((s): s is Supplier => !!s);
@@ -102,9 +119,6 @@ export default function PartsTable({ parts, isLoading = false }: PartsTableProps
 
   return (
     <div className="bg-gray-900/50 rounded-2xl border border-gray-800 overflow-hidden">
-      <AutoRefresh interval={3000} onInterval={() => {
-        // You can add any side effects here if needed on each refresh
-      }} />
 
       {/* Table Header */}
       <div className="p-6 border-b border-gray-800">

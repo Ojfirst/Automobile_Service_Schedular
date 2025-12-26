@@ -84,7 +84,7 @@ export default function DashboardStats({ stats }: DashboardStatsProps) {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-      <AutoRefresh interval={2000} onInterval={() => {
+      {/* <AutoRefresh interval={2000} onInterval={() => {
         // You can add any side effects here if needed on each refresh
         setAnimatedValues(prev => ({
           ...prev,
@@ -92,7 +92,7 @@ export default function DashboardStats({ stats }: DashboardStatsProps) {
           pendingAppointments: stats.pendingAppointments,
           totalRevenue: stats.totalRevenue
         }));
-      }} />
+      }} /> */}
 
       {statCards.map((card) => {
         const Icon = card.icon
