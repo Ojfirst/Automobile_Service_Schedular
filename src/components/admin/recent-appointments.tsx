@@ -44,6 +44,7 @@ function getStatusConfig(status: string) {
 export default function RecentAppointments({ appointments }: RecentAppointmentsProps) {
   const router = useRouter()
   const [selectedStatus, setSelectedStatus] = useState<string>('all')
+  const [isUpdating, setIsUpdating] = useState<boolean>(false)
 
   const filteredAppointments = selectedStatus === 'all'
     ? appointments
@@ -51,6 +52,7 @@ export default function RecentAppointments({ appointments }: RecentAppointmentsP
 
   const handleStatusUpdate = async (appointmentId: string, newStatus: string) => {
     try {
+      setIsUpdating(true);
       const response = await fetch(`/api/admin/appointments/${appointmentId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -63,7 +65,9 @@ export default function RecentAppointments({ appointments }: RecentAppointmentsP
       }
     } catch (error) {
       console.error('Failed to update appointment:', error);
-      toast.error('Failed to update appointment status');
+      toast.error('Appointment status update failed');
+    } finally {
+      setIsUpdating(false);
     }
   }
 
@@ -157,10 +161,11 @@ export default function RecentAppointments({ appointments }: RecentAppointmentsP
                       <select
                         value={appointment.status}
                         onChange={(e) => handleStatusUpdate(appointment.id, e.target.value as Appointment['status'])}
+                        disabled={isUpdating}
                         className="px-3 py-1.5 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                       >
                         {Object.keys(statusConfig).map(status => (
-                          <option key={status} value={status}>{status}</option>
+                          <option key={status} value={status}>{isUpdating ? 'Updating...' : status}</option>
                         ))}
                       </select>
                       <button className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors">
