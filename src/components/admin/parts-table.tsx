@@ -4,6 +4,7 @@ import { useState } from 'react'
 import type { Part, Supplier } from '@prisma/client'
 import { Package, AlertTriangle, Edit2, ExternalLink, MoreVertical } from 'lucide-react';
 import PartsForm from './parts-form';
+import AutoRefresh from '@/app/_lib/utils/auto-refresh';
 
 interface PartWithDetails extends Part {
   supplier: Supplier | null
@@ -101,6 +102,11 @@ export default function PartsTable({ parts, isLoading = false }: PartsTableProps
 
   return (
     <div className="bg-gray-900/50 rounded-2xl border border-gray-800 overflow-hidden">
+      <AutoRefresh interval={3000} onInterval={() => {
+        // You can add any side effects here if needed on each refresh
+      }} />
+
+      {/* Table Header */}
       <div className="p-6 border-b border-gray-800">
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-semibold text-gray-200">

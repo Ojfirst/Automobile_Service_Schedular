@@ -45,10 +45,13 @@ export default function PartsForm({ part, suppliers, onSuccess, onCancel }: Part
       const url = part ? `/api/inventory/parts/${part.id}` : '/api/inventory/parts'
       const method = part ? 'PUT' : 'POST'
 
+      // Prepare submission payload: convert empty supplierId to null so Prisma won't attempt to set invalid FK
+      const data = { ...formData, supplierId: formData.supplierId || null }
+
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(data),
       })
 
       if (!response.ok) {
@@ -176,7 +179,8 @@ export default function PartsForm({ part, suppliers, onSuccess, onCancel }: Part
               className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-300 focus:outline-none focus:border-blue-500"
             >
               <option value="">Select a supplier</option>
-              {suppliers.map(supplier => (
+              {/* Deduplicate suppliers by id to avoid duplicate keys when multiple parts reference the same supplier */}
+              {Array.from(new Map(suppliers.map(s => [s.id, s])).values()).map(supplier => (
                 <option key={supplier.id} value={supplier.id}>
                   {supplier.name} {supplier.contactName && `- ${supplier.contactName}`}
                 </option>

@@ -53,9 +53,4 @@ export const seed = async () => {
 	}
 };
 
-seed()
-	.then(() => prisma.$disconnect())
-	.catch((e) => {
-		console.error(e);
-		prisma.$disconnect();
-	});
+// NOTE: Do NOT auto-run `seed()` on import. Use `npm run db:seed` (runs `src/run-seed.ts`) to seed the database in development.

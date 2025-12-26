@@ -11,7 +11,6 @@ export const metadata = {
   description: 'Manage spare parts, track stock levels, and monitor inventory value',
 }
 
-
 export default async function InventoryPage() {
   const user = await currentUser()
 

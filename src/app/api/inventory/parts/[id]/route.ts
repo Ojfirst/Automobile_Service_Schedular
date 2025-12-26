@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/prisma.db';
+import { Prisma } from '@prisma/client';
 import { currentUser } from '@clerk/nextjs/server';
 
 interface RouteParams {
@@ -70,12 +71,56 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
 		const data = await request.json();
 
-		const part = await prisma.part.update({
-			where: { id: paramsId.id },
-			data,
-		});
+		// Normalize empty supplierId to null so we don't attempt to set an invalid FK
+		if (
+			'supplierId' in data &&
+			(data.supplierId === '' || data.supplierId === undefined)
+		) {
+			data.supplierId = null;
+		}
 
-		return NextResponse.json(part);
+		// If a supplierId is provided (non-null), verify the supplier exists
+		if (data.supplierId) {
+			const supplierExists = await prisma.supplier.findUnique({
+				where: { id: data.supplierId },
+			});
+			if (!supplierExists) {
+				console.error(
+					'Invalid supplierId provided in update:',
+					data.supplierId
+				);
+				return NextResponse.json(
+					{ error: 'Invalid supplierId: supplier not found' },
+					{ status: 400 }
+				);
+			}
+		}
+
+		// Perform update and handle FK errors gracefully
+		try {
+			const part = await prisma.part.update({
+				where: { id: paramsId.id },
+				data,
+			});
+
+			return NextResponse.json(part);
+		} catch (e) {
+			// Prisma Foreign Key violation (P2003)
+			if (
+				e instanceof Prisma.PrismaClientKnownRequestError &&
+				e.code === 'P2003'
+			) {
+				console.error(
+					'Foreign key constraint violated when updating part:',
+					e.meta || e.message
+				);
+				return NextResponse.json(
+					{ error: 'Invalid supplierId: foreign key constraint failed' },
+					{ status: 400 }
+				);
+			}
+			throw e;
+		}
 	} catch (error) {
 		console.error('Error updating part:', error);
 		return NextResponse.json(
