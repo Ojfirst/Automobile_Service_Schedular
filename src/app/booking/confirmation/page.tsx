@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { prisma } from '@/prisma.db'
-import { currentUser } from '@clerk/nextjs/server'
+import { getOrCreateUser } from '@/app/_lib/auth/admin-auth'
 
 interface PageProps {
   // Next may pass `searchParams` as a plain object or a Promise depending on rendering.
@@ -12,11 +12,8 @@ export default async function ConfirmationPage(props: PageProps) {
   // `searchParams` can be a Promise — await it safely.
   const searchParams = (await props.searchParams) as { id?: string }
 
-  const user = await currentUser()
+  await getOrCreateUser();
 
-  if (!user) {
-    redirect('/sign-in')
-  }
 
   if (!searchParams?.id) {
     return (

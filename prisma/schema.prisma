@@ -35,6 +35,7 @@ model Vehicle {
   fuelType     String?
   licensePlate String?       @unique
   color        String?
+  transmission String?
   mileage      Int?
   owner        User          @relation(fields: [ownerId], references: [id])
   ownerId      String
