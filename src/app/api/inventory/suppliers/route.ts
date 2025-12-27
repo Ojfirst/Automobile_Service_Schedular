@@ -1,19 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/prisma.db';
-import { currentUser } from '@clerk/nextjs/server';
+import { requireAdminApi } from '@/app/_lib/auth/admin-auth';
+import { Prisma } from '@prisma/client';
 
 // GET all suppliers
 export async function GET(request: NextRequest) {
 	try {
-		const user = await currentUser();
-		if (!user || user.publicMetadata?.role !== 'admin') {
+		const dbUser = await requireAdminApi();
+		if (!dbUser) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
 		const { searchParams } = new URL(request.url);
 		const search = searchParams.get('search');
 
-		const where: any = {};
+		const where: Prisma.SupplierWhereInput = {};
 
 		if (search) {
 			where.OR = [
@@ -48,8 +49,8 @@ export async function GET(request: NextRequest) {
 // POST create new supplier
 export async function POST(request: NextRequest) {
 	try {
-		const user = await currentUser();
-		if (!user || user.publicMetadata?.role !== 'admin') {
+		const dbUser = await requireAdminApi();
+		if (!dbUser) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 

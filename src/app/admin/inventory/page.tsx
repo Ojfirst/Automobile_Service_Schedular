@@ -1,11 +1,10 @@
 import { Suspense } from 'react'
-import { currentUser } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation';
 import AdminSidebar from '@/components/admin/admin-sidebar';
 import InventoryDashboard from '@/components/admin/inventory-dashboard'
 import InventoryStats from '@/components/admin/inventory-stats';
 import { LoadingInventory } from '@/app/_lib/utils/loadingInventory';
 import { getInventoryData } from '@/app/_lib/utils/get-inventry-data';
+import { requireAdminAuth } from '@/app/_lib/auth/admin-auth';
 
 export const metadata = {
   title: 'Inventory Management - AutoCare Pro',
@@ -13,11 +12,7 @@ export const metadata = {
 }
 
 export default async function InventoryPage() {
-  const user = await currentUser()
-
-  if (!user || user.publicMetadata?.role !== 'admin') {
-    redirect('/sign-in')
-  }
+  await requireAdminAuth()
 
   const data = await getInventoryData()
 

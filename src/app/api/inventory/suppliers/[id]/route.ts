@@ -1,34 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/prisma.db';
-import { currentUser } from '@clerk/nextjs/server';
+import { requireAdminApi } from '@/app/_lib/auth/admin-auth';
 
 interface RouteParams {
-	params: {
-		id: string;
-	};
+	params: Promise<{ id: string }>;
 }
 
-// GET single supplier with parts
+// GET supplier
 export async function GET(request: NextRequest, { params }: RouteParams) {
 	try {
-		const user = await currentUser();
-		if (!user || user.publicMetadata?.role !== 'admin') {
+		const dbUser = await requireAdminApi();
+		if (!dbUser) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
+		const paramsId = await params;
+
 		const supplier = await prisma.supplier.findUnique({
-			where: { id: params.id },
+			where: { id: paramsId.id },
 			include: {
 				parts: {
-					include: {
-						_count: {
-							select: {
-								services: true,
-								transactions: true,
-							},
-						},
+					orderBy: { createdAt: 'desc' },
+					take: 20,
+				},
+				_count: {
+					select: {
+						parts: true,
 					},
-					orderBy: { name: 'asc' },
 				},
 			},
 		});
@@ -50,18 +48,27 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 	}
 }
 
-// PUT update supplier
+// PUT supplier
 export async function PUT(request: NextRequest, { params }: RouteParams) {
 	try {
-		const user = await currentUser();
-		if (!user || user.publicMetadata?.role !== 'admin') {
+		const dbUser = await requireAdminApi();
+		if (!dbUser) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+		}
+
+		const paramsId = await params;
+
+		if (!paramsId?.id) {
+			return NextResponse.json(
+				{ error: 'Missing id parameter' },
+				{ status: 400 }
+			);
 		}
 
 		const data = await request.json();
 
 		const supplier = await prisma.supplier.update({
-			where: { id: params.id },
+			where: { id: paramsId.id },
 			data,
 		});
 
@@ -78,13 +85,22 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 // DELETE supplier
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
 	try {
-		const user = await currentUser();
-		if (!user || user.publicMetadata?.role !== 'admin') {
+		const dbUser = await requireAdminApi();
+		if (!dbUser) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
+		const paramsId = await params;
+
+		if (!paramsId?.id) {
+			return NextResponse.json(
+				{ error: 'Missing id parameter' },
+				{ status: 400 }
+			);
+		}
+
 		await prisma.supplier.delete({
-			where: { id: params.id },
+			where: { id: paramsId.id },
 		});
 
 		return NextResponse.json({ success: true });

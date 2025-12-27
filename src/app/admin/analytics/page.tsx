@@ -1,40 +1,22 @@
-import { currentUser } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
-import { prisma } from '@/prisma.db'
+import { requireAdminAuth } from '@/app/_lib/auth/admin-auth'
 import AdminHeader from '@/components/admin/admin-header'
 import AdminSidebar from '@/components/admin/admin-sidebar'
 import AnalyticsDashboard from '@/components/admin/admin-sidebar/analytics-dashboard'
+import { prisma } from '@/prisma.db'
 
 export default async function AnalyticsPage() {
-  const user = await currentUser()
+  await requireAdminAuth()
 
-  if (!user || user.publicMetadata?.role !== 'admin') {
-    redirect('/sign-in')
-  }
-
-  // Fetch data for analytics
-  const [appointments, services, revenueData] = await Promise.all([
+  const [appointments, services] = await Promise.all([
     prisma.appointment.findMany({
-      include: {
-        service: true,
-      },
+      include: { service: true, vehicle: true, user: true },
       orderBy: { date: 'desc' },
+      take: 200,
     }),
     prisma.service.findMany(),
-    prisma.appointment.findMany({
-      where: {
-        status: 'COMPLETED',
-      },
-      select: {
-        date: true,
-        service: {
-          select: {
-            price: true,
-          },
-        },
-      },
-    }),
   ])
+
+  const revenueData = appointments.map(a => ({ date: a.date, service: { price: a.service.price } }))
 
   return (
     <div className="min-h-screen">
@@ -44,15 +26,9 @@ export default async function AnalyticsPage() {
         <main className="flex-1 p-6 lg:p-8 bg-black">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-200">Analytics</h1>
-            <p className="text-gray-400 mt-2">
-              Business insights, reports, and performance metrics
-            </p>
+            <p className="text-gray-400 mt-2">View usage and appointment analytics</p>
           </div>
-          <AnalyticsDashboard
-            appointments={appointments}
-            services={services}
-            revenueData={revenueData}
-          />
+          <AnalyticsDashboard appointments={appointments} services={services} revenueData={revenueData} />
         </main>
       </div>
     </div>

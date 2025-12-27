@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/prisma.db';
-import { currentUser } from '@clerk/nextjs/server';
 import { Prisma } from '@prisma/client';
+import { requireAdminApi } from '@/app/_lib/auth/admin-auth';
 
 // GET all parts
 export async function GET(request: NextRequest) {
 	try {
-		const user = await currentUser();
-		if (!user || user.publicMetadata?.role !== 'admin') {
+		const dbUser = await requireAdminApi();
+		if (!dbUser) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
@@ -68,8 +68,8 @@ export async function GET(request: NextRequest) {
 // POST create new part
 export const POST = async (request: NextRequest) => {
 	try {
-		const user = await currentUser();
-		if (!user || user.publicMetadata?.role !== 'admin') {
+		const dbUser = await requireAdminApi();
+		if (!dbUser) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
@@ -99,7 +99,7 @@ export const POST = async (request: NextRequest) => {
 		const createDataBase = {
 			...rest,
 			...numericData,
-			createdBy: user.id,
+			createdBy: dbUser.clerkUserId,
 		};
 
 		// Compose final data object (add nested supplier connect only if provided)

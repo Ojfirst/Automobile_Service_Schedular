@@ -1,16 +1,11 @@
-import { currentUser } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
 import { prisma } from '@/prisma.db'
 import AdminHeader from '@/components/admin/admin-header'
 import AdminSidebar from '@/components/admin/admin-sidebar'
 import VehiclesTable from '@/components/admin/admin-sidebar/vehicles-table';
+import { requireAdminAuth } from '@/app/_lib/auth/admin-auth'
 
 export default async function VehiclesPage() {
-  const user = await currentUser()
-
-  if (!user || user.publicMetadata?.role !== 'admin') {
-    redirect('/sign-in')
-  }
+  await requireAdminAuth()
 
   const vehicles = await prisma.vehicle.findMany({
     include: {

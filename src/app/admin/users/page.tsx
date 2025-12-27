@@ -1,21 +1,16 @@
-import { currentUser } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
 import { prisma } from '@/prisma.db';
 import AdminHeader from '@/components/admin/admin-header';
 import AdminSidebar from '@/components/admin/admin-sidebar';
 import UsersTable from '@/components/admin/admin-sidebar/users-table';
 import { Prisma } from '@prisma/client';
+import { requireAdminAuth } from '@/app/_lib/auth/admin-auth';
 
 type Props = {
   searchParams?: { q?: string } | Record<string, string>
 }
 
 export default async function UsersPage({ searchParams }: Props) {
-  const user = await currentUser()
-
-  if (!user || user.publicMetadata?.role !== 'admin') {
-    redirect('/sign-in')
-  }
+  await requireAdminAuth();
 
   const q = (searchParams as { q?: string } | undefined)?.q?.trim() ?? ''
 

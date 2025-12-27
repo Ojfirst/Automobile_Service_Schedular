@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/prisma.db';
 import { Prisma } from '@prisma/client';
-import { currentUser } from '@clerk/nextjs/server';
+import { requireAdminApi } from '@/app/_lib/auth/admin-auth';
 
 interface RouteParams {
 	params: Promise<{ id: string }>;
@@ -10,8 +10,8 @@ interface RouteParams {
 // GET single part
 export async function GET(request: NextRequest, { params }: RouteParams) {
 	try {
-		const user = await currentUser();
-		if (!user || user.publicMetadata?.role !== 'admin') {
+		const dbUser = await requireAdminApi();
+		if (!dbUser) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
@@ -50,8 +50,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 // PUT update part
 export async function PUT(request: NextRequest, { params }: RouteParams) {
 	try {
-		const user = await currentUser();
-		if (!user || user.publicMetadata?.role !== 'admin') {
+		const dbUser = await requireAdminApi();
+		if (!dbUser) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
@@ -133,8 +133,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 // DELETE part
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
 	try {
-		const user = await currentUser();
-		if (!user || user.publicMetadata?.role !== 'admin') {
+		const dbUser = await requireAdminApi();
+		if (!dbUser) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 

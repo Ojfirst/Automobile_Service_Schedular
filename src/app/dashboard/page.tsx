@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
 
-import { currentUser } from '@clerk/nextjs/server';
+import { getOrCreateUser } from '../_lib/auth/admin-auth';
 import DashBardNav from '@/components/Navigations/dashboard-nav'
 import DashboardActions from '@/components/dashboard/action-card/service-actions';
 import VehiclesDB from '@/components/dashboard/vehicles'
@@ -16,18 +16,7 @@ import Loading from '../_lib/utils/loading';
 
 
 export default async function Dashboard() {
-  const user = await currentUser()
-
-  if (!user) {
-    redirect('/sign-in')
-  }
-
-  const dbUser = await prisma.user.findUnique({
-    where: { clerkUserId: user.id }
-  })
-  if (!dbUser) {
-    redirect('/sign-in')
-  }
+  const { dbUser, user } = await getOrCreateUser()
 
   const vehicles = await prisma.vehicle.findMany({
     where: { ownerId: dbUser.id },

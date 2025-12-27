@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/prisma.db';
-import { currentUser } from '@clerk/nextjs/server';
+import { requireAdminApi } from '@/app/_lib/auth/admin-auth';
 
 const validStatuses = [
 	'PENDING',
@@ -15,21 +15,13 @@ const PATCH = async (
 	{ params }: { params: Promise<{ id: string }> }
 ) => {
 	try {
-		const user = await currentUser();
+		const dbUser = await requireAdminApi();
 		const { id } = await params;
 
-		if (!user) {
+		if (!dbUser) {
 			return NextResponse.json(
 				{ error: 'Authentication required' },
 				{ status: 401 }
-			);
-		}
-
-		// Check admin role
-		if (user.publicMetadata?.role !== 'admin') {
-			return NextResponse.json(
-				{ error: 'Invalid credentials' },
-				{ status: 403 }
 			);
 		}
 
@@ -64,7 +56,9 @@ const PATCH = async (
 		});
 
 		// Log the action
-		console.log(`Admin ${user.id} updated appointment ${id} to ${status}`);
+		console.log(
+			`Admin ${dbUser.clerkUserId} updated appointment ${id} to ${status}`
+		);
 
 		return NextResponse.json({
 			success: true,

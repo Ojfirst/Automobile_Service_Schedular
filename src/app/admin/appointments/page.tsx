@@ -1,24 +1,20 @@
-import { currentUser } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
 import { prisma } from '@/prisma.db'
 import AdminHeader from '@/components/admin/admin-header'
 import AdminSidebar from '@/components/admin/admin-sidebar'
 import AppointmentsTable from '@/components/admin/admin-sidebar/appointments-table'
+import { requireAdminAuth } from '@/app/_lib/auth/admin-auth'
 
 export default async function AppointmentsPage() {
-  const user = await currentUser()
-
-  if (!user || user.publicMetadata?.role !== 'admin') {
-    redirect('/sign-in')
-  }
+  await requireAdminAuth()
 
   const appointments = await prisma.appointment.findMany({
     include: {
-      service: true,
-      vehicle: true,
       user: true,
+      vehicle: true,
+      service: true,
     },
     orderBy: { date: 'desc' },
+    take: 200,
   })
 
   return (
@@ -30,7 +26,7 @@ export default async function AppointmentsPage() {
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-200">Appointments</h1>
             <p className="text-gray-400 mt-2">
-              Manage all customer appointments and bookings
+              Manage customer appointments and status
             </p>
           </div>
           <AppointmentsTable appointments={appointments} />

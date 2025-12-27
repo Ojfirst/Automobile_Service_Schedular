@@ -1,5 +1,4 @@
-import { currentUser } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
+import { requireAdminAuth } from '@/app/_lib/auth/admin-auth'
 import { prisma } from '@/prisma.db'
 import AdminHeader from '@/components/admin/admin-header'
 import AdminSidebar from '@/components/admin/admin-sidebar'
@@ -9,16 +8,11 @@ import QuickActions from '@/components/admin/quick-actions'
 import RecentUser from '@/components/admin/recent-user'
 
 const AdminDashboard = async () => {
+  const dbUser = await requireAdminAuth()
 
-  const user = await currentUser()
-
-  if (!user) {
-    redirect('/sign-in')
-  }
-
-  const role = user.publicMetadata?.role
-  if (role !== 'admin') {
-    redirect('/dashboard')
+  const user = {
+    firstName: dbUser.name?.split(' ')[0] || 'Admin',
+    email: dbUser.email,
   }
 
   // Fetch data in parallel for better performance
