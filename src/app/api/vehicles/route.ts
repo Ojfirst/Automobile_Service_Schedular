@@ -1,11 +1,11 @@
 import { prisma } from '@/prisma.db';
 import { NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { getOrCreateUser } from '@/app/_lib/auth/admin-auth';
 
 // GET - Get user's vehicles
 export async function GET() {
 	try {
-		const user = await currentUser();
+		const { user } = await getOrCreateUser();
 
 		if (!user) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -22,6 +22,7 @@ export async function GET() {
 					clerkUserId: user.id,
 					email: user.emailAddresses[0].emailAddress,
 					name: `${user.firstName}`.trim(),
+					role: 'USER',
 				},
 			});
 		}
@@ -44,13 +45,27 @@ export async function GET() {
 // POST - Add a new vehicle
 export const POST = async (req: Request) => {
 	try {
-		const user = await currentUser();
+		const { user } = await getOrCreateUser();
 
 		if (!user) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
-		const { make, model, year, vin } = await req.json();
+		const {
+			make,
+			model,
+			year,
+			vin,
+			fuelType,
+			licensePlate,
+			color,
+			transmission,
+			mileage,
+		} = await req.json();
+		console.debug('POST /api/vehicles body:', {
+			mileage,
+			type: typeof mileage,
+		});
 		if (!make || !model || !year) {
 			return NextResponse.json(
 				{ error: 'Vehicle make, model and year is required' },
@@ -73,6 +88,14 @@ export const POST = async (req: Request) => {
 		}
 
 		const vinValid = vin && vin.trim() !== '' ? vin : null;
+		const licensePlateValid =
+			licensePlate && licensePlate.trim() !== '' ? licensePlate : null;
+		const colorValid = color && color.trim() !== '' ? color : null;
+		const mileageValid =
+			mileage !== undefined && mileage !== null && !isNaN(Number(mileage))
+				? Math.floor(Number(mileage))
+				: null;
+		console.debug('Computed mileageValid:', mileageValid);
 
 		const yearNumber = Number(year);
 		if (Number.isNaN(yearNumber)) {
@@ -88,10 +111,16 @@ export const POST = async (req: Request) => {
 				model,
 				year: Math.floor(yearNumber),
 				vin: vinValid,
+				fuelType,
+				licensePlate: licensePlateValid,
+				color: colorValid,
+				transmission,
+				mileage: mileageValid,
 				ownerId: dbUser.id,
 				// removed nested owner connect to satisfy prisma types
 			},
 		});
+		console.debug('Created vehicle:', vehicle);
 		return NextResponse.json(vehicle);
 	} catch (error) {
 		console.error('Error creating vehicle', error);

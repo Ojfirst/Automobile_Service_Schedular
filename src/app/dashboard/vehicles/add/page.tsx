@@ -13,7 +13,12 @@ export default function AddVehiclePage() {
     make: '',
     model: '',
     year: '',
-    vin: ''
+    vin: '',
+    fuelType: '',
+    licensePlate: '',
+    color: '',
+    transmission: '',
+    mileage: '',
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -22,18 +27,28 @@ export default function AddVehiclePage() {
 
     console.log(formData);
     try {
+      // coerce mileage to a number (or null) before sending
+      const payload = {
+        ...formData,
+        mileage:
+          formData.mileage === '' || formData.mileage === null
+            ? null
+            : Number(formData.mileage),
+      }
+
       const response = await fetch('/api/vehicles', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       })
 
       if (response.ok) {
         toast.success('Vehicle added successfully!');
         router.push('/dashboard');
         router.refresh();
+
       } else {
         const error = await response.json()
         toast.error(error.error || 'Failed to add vehicle')
@@ -44,7 +59,7 @@ export default function AddVehiclePage() {
         console.error('Error adding vehicle:', error)
       }
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
@@ -149,6 +164,86 @@ export default function AddVehiclePage() {
                   id="vin"
                   name="vin"
                   value={formData.vin}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Vehicle Identification Number"
+                />
+              </div>
+              {/* Transmission */}
+              <div>
+                <label htmlFor="transmission" className="block text-sm font-medium text-gray-700 mb-2">
+                  Transmission (Optional)
+                </label>
+                <input
+                  type="text"
+                  id="transmission"
+                  name="transmission"
+                  value={formData.transmission}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Vehicle Identification Number"
+                />
+              </div>
+
+              {/* Fuel Type */}
+              <div>
+                <label htmlFor="fuelType" className="block text-sm font-medium text-gray-700 mb-2">
+                  Fuel Type (Optional)
+                </label>
+                <input
+                  type="text"
+                  id="fuelType"
+                  name="fuelType"
+                  value={formData.fuelType}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Vehicle Identification Number"
+                />
+              </div>
+
+              {/* Mileage */}
+              <div>
+                <label htmlFor="mileage" className="block text-sm font-medium text-gray-700 mb-2">
+                  Mileage (Optional)
+                </label>
+                <input
+                  type="number"
+                  id="mileage"
+                  name="mileage"
+                  value={formData.mileage}
+                  onChange={handleChange}
+                  min={0}
+                  step={1}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="e.g., 120000"
+                />
+              </div>
+
+              {/* Color */}
+              <div>
+                <label htmlFor="color" className="block text-sm font-medium text-gray-700 mb-2">
+                  Color (Optional)
+                </label>
+                <input
+                  type="text"
+                  id="color"
+                  name="color"
+                  value={formData.color}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Vehicle Identification Number"
+                />
+              </div>
+              {/* License Plate */}
+              <div>
+                <label htmlFor="licensePlate" className="block text-sm font-medium text-gray-700 mb-2">
+                  License Plate (Optional)
+                </label>
+                <input
+                  type="text"
+                  id="licensePlate"
+                  name="licensePlate"
+                  value={formData.licensePlate}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Vehicle Identification Number"
