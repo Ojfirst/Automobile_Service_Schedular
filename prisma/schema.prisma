@@ -12,10 +12,18 @@ model User {
   email        String        @unique
   name         String?
   clerkUserId  String        @unique
+  role         Role     @default(USER)
   vehicles     Vehicle[]
   appointments Appointment[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
+}
+
+enum Role {
+  ADMIN
+  MECHANIC
+  RECEPTIONIST
+  USER
 }
 
 model Vehicle {

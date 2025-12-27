@@ -19,7 +19,7 @@ export interface NavItem {
 
 export const adminNavItems: NavItem[] = [
 	{
-		href: '/admin',
+		href: '/admin/dashboard',
 		label: 'Dashboard',
 		icon: 'LayoutDashboard',
 		description: 'Overview of your service center',
@@ -54,7 +54,6 @@ export const adminNavItems: NavItem[] = [
 		icon: 'BarChart3',
 		description: 'Business insights & reports',
 	},
-	// Add to navItems array:
 	{
 		href: '/admin/inventory',
 		label: 'Inventory',

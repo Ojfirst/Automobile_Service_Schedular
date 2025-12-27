@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import { currentUser } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
+import { redirect } from 'next/navigation';
+import AdminSidebar from '@/components/admin/admin-sidebar';
 import InventoryDashboard from '@/components/admin/inventory-dashboard'
 import InventoryStats from '@/components/admin/inventory-stats';
 import { LoadingInventory } from '@/app/_lib/utils/loadingInventory';
@@ -39,43 +40,46 @@ export default async function InventoryPage() {
   }
 
   return (
-    <main className="flex-1 p-6 lg:p-8 bg-black">
-      {/* Page Header */}
-      <div className="mb-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-200">Inventory Management</h1>
-            <p className="text-gray-400 mt-2">
-              Manage spare parts, track stock levels, and monitor inventory value
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="text-right">
-              <p className="text-sm text-gray-400">Last Updated</p>
-              <p className="text-gray-300 font-medium">
-                {new Date().toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                })}
+    <div className="min-h-screen flex">
+      <AdminSidebar />
+      <main className="flex-1 p-6 lg:p-8 bg-black">
+        {/* Page Header */}
+        <div className="mb-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-200">Inventory Management</h1>
+              <p className="text-gray-400 mt-2">
+                Manage spare parts, track stock levels, and monitor inventory value
               </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="text-right">
+                <p className="text-sm text-gray-400">Last Updated</p>
+                <p className="text-gray-300 font-medium">
+                  {new Date().toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Suspense boundary for better loading experience */}
-      <Suspense fallback={<LoadingInventory />}>
-        <InventoryStats stats={stats} />
-        <InventoryDashboard
-          parts={data.parts}
-          lowStockParts={data.lowStockParts}
-          recentTransactions={data.recentTransactions}
-          suppliers={data.suppliers}
-          stats={stats}
-        />
-      </Suspense>
-    </main>
+        {/* Suspense boundary for better loading experience */}
+        <Suspense fallback={<LoadingInventory />}>
+          <InventoryStats stats={stats} />
+          <InventoryDashboard
+            parts={data.parts}
+            lowStockParts={data.lowStockParts}
+            recentTransactions={data.recentTransactions}
+            suppliers={data.suppliers}
+            stats={stats}
+          />
+        </Suspense>
+      </main>
+    </div>
   )
 }

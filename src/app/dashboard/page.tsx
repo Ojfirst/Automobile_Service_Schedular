@@ -26,7 +26,7 @@ export default async function Dashboard() {
     where: { clerkUserId: user.id }
   })
   if (!dbUser) {
-    redirect('/dashboard')
+    redirect('/sign-in')
   }
 
   const vehicles = await prisma.vehicle.findMany({
