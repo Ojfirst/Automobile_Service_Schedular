@@ -97,7 +97,12 @@ export default function AppointmentsTable({ appointments }: AppointmentsTablePro
                   </div>
                   <div className="flex items-center gap-2 mt-1">
                     <Clock className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm text-gray-500">{appointment.time}</span>
+                    <span className="text-sm text-gray-500">{
+                      new Date(appointment.date).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </span>
                   </div>
                 </td>
                 <td className="p-4">

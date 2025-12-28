@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { BarChart3, DollarSign, Calendar, TrendingUp, PieChart, Users, Car, Wrench } from 'lucide-react'
-import { Appointment, Service } from '@prisma/client'
+import { Appointment, Service, Vehicle } from '@prisma/client'
 
 interface RevenueData {
   date: Date
@@ -15,10 +15,12 @@ interface AnalyticsDashboardProps {
   appointments: (Appointment & { service: Service })[]
   services: Service[]
   revenueData: RevenueData[]
+  vehicles: Vehicle[]
 }
 
-export default function AnalyticsDashboard({ appointments, services, revenueData }: AnalyticsDashboardProps) {
+export default function AnalyticsDashboard({ appointments, services, revenueData, vehicles }: AnalyticsDashboardProps) {
   const [timeRange, setTimeRange] = useState('month')
+
 
   // Calculate metrics
   const totalRevenue = revenueData.reduce((sum, item) => sum + item.service.price, 0)
@@ -165,12 +167,12 @@ export default function AnalyticsDashboard({ appointments, services, revenueData
                 <div key={service.name} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className={`p-2 rounded-lg ${index === 0 ? 'bg-blue-500/20' :
-                        index === 1 ? 'bg-purple-500/20' :
-                          index === 2 ? 'bg-green-500/20' : 'bg-gray-800'
+                      index === 1 ? 'bg-purple-500/20' :
+                        index === 2 ? 'bg-green-500/20' : 'bg-gray-800'
                       }`}>
                       <Wrench className={`w-4 h-4 ${index === 0 ? 'text-blue-400' :
-                          index === 1 ? 'text-purple-400' :
-                            index === 2 ? 'text-green-400' : 'text-gray-400'
+                        index === 1 ? 'text-purple-400' :
+                          index === 2 ? 'text-green-400' : 'text-gray-400'
                         }`} />
                     </div>
                     <div>
@@ -213,7 +215,7 @@ export default function AnalyticsDashboard({ appointments, services, revenueData
               <p className="text-gray-400 text-sm">Popular Vehicle Make</p>
               <p className="text-2xl font-bold text-white">
                 {(() => {
-                  const makes = appointments.map(a => a.vehicleMake)
+                  const makes = vehicles.map(a => a.make)
                   const frequency = makes.reduce((acc, make) => {
                     acc[make] = (acc[make] || 0) + 1
                     return acc

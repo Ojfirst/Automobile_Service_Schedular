@@ -7,14 +7,16 @@ import { prisma } from '@/prisma.db'
 export default async function AnalyticsPage() {
   await requireAdminAuth()
 
-  const [appointments, services] = await Promise.all([
+  const [appointments, services, vehicle] = await Promise.all([
     prisma.appointment.findMany({
       include: { service: true, vehicle: true, user: true },
       orderBy: { date: 'desc' },
       take: 200,
     }),
     prisma.service.findMany(),
+    prisma.vehicle.findMany()
   ])
+
 
   const revenueData = appointments.map(a => ({ date: a.date, service: { price: a.service.price } }))
 
@@ -28,7 +30,7 @@ export default async function AnalyticsPage() {
             <h1 className="text-3xl font-bold text-gray-200">Analytics</h1>
             <p className="text-gray-400 mt-2">View usage and appointment analytics</p>
           </div>
-          <AnalyticsDashboard appointments={appointments} services={services} revenueData={revenueData} />
+          <AnalyticsDashboard appointments={appointments} services={services} revenueData={revenueData} vehicles={vehicle} />
         </main>
       </div>
     </div>
