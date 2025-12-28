@@ -18,7 +18,6 @@ const ServicePage = async () => {
       {/* Content */}
       <div className="min-h-screen bg-gray-50">
         <Suspense fallback={<Loading />}>
-
           <Services user={user!} />
         </Suspense>
       </div>

@@ -1,8 +1,8 @@
 import Link from "next/link"
-import { currentUser } from "@clerk/nextjs/server"
+import { getOrCreateUser } from "@/app/_lib/auth/admin-auth";
 
 const ServicePageNavigation = async () => {
-  const user = await currentUser();
+  const { user } = await getOrCreateUser();
 
   return (
     <header className="bg-white shadow">
