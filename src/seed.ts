@@ -1,4 +1,5 @@
 import { prisma } from '@/prisma.db';
+import { Role } from '@prisma/client';
 import { ServiceCategory, ServiceType, VehicleType } from '@prisma/client';
 
 export const seed = async () => {
@@ -81,5 +82,33 @@ export const seed = async () => {
 		});
 	}
 };
+
+async function main() {
+	console.log('🌱 Seeding default admin...');
+
+	const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL || 'admin@yourdomain.com';
+
+	await prisma.user.upsert({
+		where: { email: ADMIN_EMAIL },
+		update: { role: Role.ADMIN },
+		create: {
+			email: ADMIN_EMAIL,
+			name: 'Default Admin',
+			clerkUserId: 'SEED_ADMIN', // placeholder, will be linked on login
+			role: Role.ADMIN,
+		},
+	});
+
+	console.log('✅ Default admin ensured');
+}
+
+main()
+	.catch((e) => {
+		console.error(e);
+		process.exit(1);
+	})
+	.finally(async () => {
+		await prisma.$disconnect();
+	});
 
 // NOTE: Do NOT auto-run `seed()` on import. Use `npm run db:seed` (runs `src/run-seed.ts`) to seed the database in development.
