@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Service } from '@prisma/client'
-import { Plus, Edit2, Trash2, DollarSign, Clock, Search } from 'lucide-react'
+import { Plus, Edit2, Trash2, DollarSign, Clock, Search, Wrench } from 'lucide-react'
 
 interface ServicesManagerProps {
   services: Service[]

@@ -1,6 +1,7 @@
 import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/prisma.db';
+import { Role } from '@prisma/client';
 
 export const getOrCreateUser = async () => {
 	const user = await currentUser();
@@ -24,10 +25,22 @@ export const getOrCreateUser = async () => {
 	return { dbUser, user };
 };
 
+// helper for user API routes: returns dbUser if the current user is authenticated, otherwise null
+export const requireUserApi = async () => {
+	const user = await currentUser();
+
+	if (!user) return null;
+	const dbUser = await prisma.user.findUnique({
+		where: { clerkUserId: user.id },
+	});
+	if (!dbUser) return null;
+	return dbUser;
+};
+
 export const requireAdminAuth = async () => {
 	const { dbUser } = await getOrCreateUser();
 
-	if (dbUser.role !== 'ADMIN') {
+	if (dbUser.role !== Role.ADMIN && dbUser.role !== Role.SUPER_ADMIN) {
 		redirect('/dashboard');
 	}
 
@@ -44,7 +57,8 @@ export const requireAdminApi = async () => {
 	});
 
 	if (!dbUser) return null;
-	if (dbUser.role !== 'ADMIN') return null;
+	if (dbUser.role !== Role.ADMIN && dbUser.role !== Role.SUPER_ADMIN)
+		return null;
 
 	return dbUser;
 };

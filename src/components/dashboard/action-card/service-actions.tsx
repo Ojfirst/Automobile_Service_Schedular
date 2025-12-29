@@ -6,7 +6,8 @@ interface ActionCard {
   hoverColor: string;
   gradientFrom: string;
   gradientTo: string;
-  icon: React.ReactNode;
+  // Expect a React element with an optional `className` prop so we can safely clone and inject sizing classes
+  icon: React.ReactElement<{ className?: string }>;
   title: string;
   description: string;
   pulseColor: string;
@@ -34,7 +35,11 @@ const DashboardActions = ({ actionCards = [] }: DashboardActionsProps) => {
             <div className="flex items-start justify-between mb-4">
               <div className={`p-3 rounded-xl ${getIconBgColor(card.hoverColor)}`}>
                 <div className="text-white">
-                  {React.cloneElement(card.icon, { className: "w-6 h-6" })}
+                  {React.isValidElement(card.icon)
+                    ? React.cloneElement(card.icon, {
+                      className: `${card.icon.props?.className ?? ''} w-6 h-6`.trim(),
+                    })
+                    : card.icon}
                 </div>
               </div>
               <div className="text-gray-400 group-hover:text-gray-300 transition-colors transform group-hover:translate-x-0.5 duration-200">

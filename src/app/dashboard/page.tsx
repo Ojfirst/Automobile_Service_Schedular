@@ -1,7 +1,8 @@
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
-
+import { Role } from '@prisma/client';
+import { requireAdminApi } from '../_lib/auth/admin-auth';
 import { getOrCreateUser } from '../_lib/auth/admin-auth';
 import DashBardNav from '@/components/Navigations/dashboard-nav'
 import DashboardActions from '@/components/dashboard/action-card/service-actions';
@@ -17,6 +18,7 @@ import Loading from '../_lib/utils/loading';
 
 export default async function Dashboard() {
   const { dbUser, user } = await getOrCreateUser()
+  const adminUser = await requireAdminApi();
 
   const vehicles = await prisma.vehicle.findMany({
     where: { ownerId: dbUser.id },
@@ -24,7 +26,10 @@ export default async function Dashboard() {
   })
 
   if (vehicles.length === 0) {
-    redirect('/dashboard/vehicles/add')
+    if (adminUser?.role === Role.ADMIN || adminUser?.role === Role.SUPER_ADMIN) {
+      return redirect('/admin/')
+    }
+    return redirect('/dashboard/vehicles/add')
   }
   const vehicle = vehicles[0];
 
