@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { RoleType } from "@/prisma.db";
 
 interface User {
   id: string;
@@ -61,10 +62,10 @@ export default function RolesTab({ }: RolesTabProps) {
     <div className="space-y-6">
       {loading && <p className="text-gray-400">Loading...</p>}
 
-      <div className="overflow-x-auto rounded-lg border border-gray-800 bg-gray-900">
+      <div className="overflow-x-auto rounded-lg border border-gray-800 bg-gray-800/50">
         <table className="w-full text-left">
           <thead>
-            <tr className="border-b border-gray-800 text-gray-400">
+            <tr className="border-b border-gray-800 text-gray-200">
               <th className="p-4">Name</th>
               <th className="p-4">Email</th>
               <th className="p-4">Role</th>
@@ -75,7 +76,7 @@ export default function RolesTab({ }: RolesTabProps) {
             {users.map((user) => (
               <tr
                 key={user.id}
-                className="border-b border-gray-800 hover:bg-gray-800/30"
+                className="border-b text-gray-400 border-gray-800 hover:bg-gray-800/30"
               >
                 <td className="p-4">{user.name || "N/A"}</td>
                 <td className="p-4">{user.email}</td>
@@ -88,9 +89,12 @@ export default function RolesTab({ }: RolesTabProps) {
                     className="bg-gray-800 border border-gray-700 rounded-lg px-2 py-1 text-gray-300"
                   >
                     <option value="ADMIN">ADMIN</option>
-                    <option value="MECHANIC">MECHANIC</option>
-                    <option value="RECEPTIONIST">RECEPTIONIST</option>
-                    <option value="USER">USER</option>
+                    {Object.values(RoleType).map((role) =>
+                      role !== 'ADMIN' ? (
+                        <option key={role} value={role}>{role}</option>
+                      ) : null
+                    )}
+
                   </select>
                 </td>
                 <td className="p-4">

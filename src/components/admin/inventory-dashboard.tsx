@@ -10,6 +10,7 @@ import InventoryChart from './inventory-chart'
 import TransactionHistory from './transaction-history'
 import PartsForm from './parts-form'
 import SupplierForm from './supplier-form'
+import RolesTab from './role-tab'
 // NOTE: Don't import server-only Clerk APIs into this client component.
 // Use the client-side API endpoint `GET /api/auth/me` instead.
 
@@ -340,6 +341,10 @@ export default function InventoryDashboard({
       {activeTab === 'transactions' && (
         <TransactionHistory transactions={recentTransactions} />
       )}
+
+      {/* Roles Tab */}
+      {activeTab === 'roles' && <RolesTab />}
+
 
       {/* Suppliers Tab */}
       {activeTab === 'suppliers' && (
