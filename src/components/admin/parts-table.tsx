@@ -2,14 +2,15 @@
 
 import { useRouter } from 'next/navigation';
 import { useAutoRevalidate } from '@/app/_lib/hooks/use-auto-revalidate';
-import { useState, useEffect, useRef, type ReactNode } from 'react'
-import { createPortal } from 'react-dom';
+import { useState } from 'react'
+
 import type { Part, Supplier } from '@prisma/client'
 import { Package, AlertTriangle, Edit2, ExternalLink, MoreVertical } from 'lucide-react';
-import PartsForm from './parts-form';
+
+import { renderPartsForm } from './parts/render_parts_form';
 
 
-interface PartWithDetails extends Part {
+export interface PartWithDetails extends Part {
   supplier: Supplier | null
   _count: {
     transactions: number
@@ -52,64 +53,7 @@ export default function PartsTable({ parts, isLoading = false }: PartsTableProps
     setShowPartsForm(true);
   }
 
-  // Render form when requested
-  const renderPartsForm = () => {
-    if (!showPartsForm) return null;
 
-    const Modal = ({ children, onClose }: { children: ReactNode; onClose: () => void }) => {
-      const containerRef = useRef<HTMLDivElement | null>(null);
-
-      useEffect(() => {
-        const onKey = (e: KeyboardEvent) => {
-          if (e.key === 'Escape') onClose();
-        };
-
-        document.addEventListener('keydown', onKey);
-        const prevOverflow = document.body.style.overflow;
-        document.body.style.overflow = 'hidden';
-
-        return () => {
-          document.removeEventListener('keydown', onKey);
-          document.body.style.overflow = prevOverflow;
-        };
-      }, [onClose]);
-
-      const modal = (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-          <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-
-          <div ref={containerRef} className="relative w-full max-w-3xl max-h-[90vh] overflow-auto z-10">
-            <div className="bg-gray-900 rounded-2xl border border-gray-800 shadow-xl overflow-hidden p-5">
-              <div className="flex items-center justify-between p-4 border-b border-gray-800">
-                <h3 className="text-lg font-medium text-gray-200">{editingPart ? 'Edit Part' : 'Create Part'}</h3>
-                <button
-                  onClick={onClose}
-                  className="p-2 rounded-md text-gray-300 hover:bg-gray-800"
-                  title="Close"
-                >
-                  ✕
-                </button>
-              </div>
-              {children}
-            </div>
-          </div>
-        </div>
-      );
-
-      return typeof document !== 'undefined' ? createPortal(modal, document.body) : null;
-    };
-
-    return (
-      <Modal onClose={() => { setShowPartsForm(false); setEditingPart(null); }}>
-        <PartsForm
-          part={editingPart ?? undefined}
-          suppliers={editSuppliers}
-          onCancel={() => { setShowPartsForm(false); setEditingPart(null); }}
-          onSuccess={() => { setShowPartsForm(false); setEditingPart(null); }}
-        />
-      </Modal>
-    );
-  }
 
   const getStockStatus = (stock: number, minStock: number) => {
     if (stock === 0) return { color: 'text-red-400', bg: 'bg-red-500/10', label: 'Out of Stock' }
@@ -182,7 +126,7 @@ export default function PartsTable({ parts, isLoading = false }: PartsTableProps
       </div>
 
       {/* Parts form (create/edit) */}
-      {renderPartsForm()}
+      {renderPartsForm(showPartsForm, setShowPartsForm, editingPart, setEditingPart, editSuppliers)}
 
       {parts.length === 0 ? (
         <div className="p-8 text-center">
