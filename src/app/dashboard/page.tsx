@@ -20,15 +20,17 @@ export default async function Dashboard() {
   const { dbUser, user } = await getOrCreateUser()
   const adminUser = await requireAdminApi();
 
+  // If current user is an admin (including SUPER_ADMIN), send them to the admin dashboard immediately
+  if (adminUser?.role === Role.ADMIN || adminUser?.role === Role.SUPER_ADMIN) {
+    return redirect('/admin/dashboard')
+  }
+
   const vehicles = await prisma.vehicle.findMany({
     where: { ownerId: dbUser.id },
     orderBy: { createdAt: 'desc' }
   })
 
   if (vehicles.length === 0) {
-    if (adminUser?.role === Role.ADMIN || adminUser?.role === Role.SUPER_ADMIN) {
-      return redirect('/admin/')
-    }
     return redirect('/dashboard/vehicles/add')
   }
   const vehicle = vehicles[0];

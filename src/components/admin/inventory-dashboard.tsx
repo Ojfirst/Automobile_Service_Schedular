@@ -1,14 +1,17 @@
 'use client'
 
-import { useState } from 'react'
-import { Part, Supplier, InventoryTransaction } from '@prisma/client'
-import { Package, AlertTriangle, TrendingUp, Plus, Search, Download, BarChart3, Building, DollarSignIcon, ToolCaseIcon, Eye } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import type { Part, Supplier, InventoryTransaction, User as DbUser } from '@prisma/client'
+import { Package, AlertTriangle, TrendingUp, Plus, Search, Download, BarChart3, Building, DollarSignIcon, ToolCaseIcon, Eye, User2 } from 'lucide-react'
+import { RoleType } from '@/prisma.db'
 import PartsTable from './parts-table'
 import LowStockAlert from './low-stock-alert'
 import InventoryChart from './inventory-chart'
 import TransactionHistory from './transaction-history'
 import PartsForm from './parts-form'
 import SupplierForm from './supplier-form'
+// NOTE: Don't import server-only Clerk APIs into this client component.
+// Use the client-side API endpoint `GET /api/auth/me` instead.
 
 interface PartWithDetails extends Part {
   supplier: Supplier | null
@@ -23,16 +26,6 @@ type InventoryDashboardProps = {
   lowStockParts: Part[]
   recentTransactions: (InventoryTransaction & { part: Part })[]
   suppliers: Supplier[]
-  stats: {
-    inventoryValue: number
-    retailValue: number
-    totalParts: number
-    outOfStock: number
-    lowStock: number
-    totalSuppliers: number
-    potentialProfit: number
-    avgMargin: number
-  }
 }
 
 export default function InventoryDashboard({
@@ -40,13 +33,28 @@ export default function InventoryDashboard({
   lowStockParts,
   recentTransactions,
   suppliers,
-  stats,
 }: InventoryDashboardProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [showPartsForm, setShowPartsForm] = useState(false)
   const [showSupplierForm, setShowSupplierForm] = useState(false)
   const [activeTab, setActiveTab] = useState('overview')
+
+  const [dbUser, setDbUser] = useState<DbUser | null>(null)
+
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then(async (res) => {
+        if (!res.ok) return setDbUser(null)
+        const data = await res.json()
+        setDbUser(data.dbUser ?? null)
+      })
+      .catch(() => setDbUser(null))
+  }, [])
+
+
+
+
 
   // Get unique categories
   const categories = Array.from(new Set(parts.map(p => p.category)))
@@ -118,6 +126,21 @@ export default function InventoryDashboard({
           <Building className="w-4 h-4 inline mr-2" />
           Suppliers ({suppliers?.length || 0})
         </button>
+
+        {dbUser?.role === RoleType.SUPER_ADMIN && (
+          <button
+            onClick={() => setActiveTab('roles')}
+            className={`flex-1 px-4 py-2 rounded-lg transition-colors ${activeTab === 'roles'
+              ? 'bg-gray-900 text-white'
+              : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              }`}
+          >
+            <User2 className="w-4 h-4 inline mr-2" />
+            Roles
+          </button>
+        )}
+
+
       </div>
 
       {/* Add Part Form Modal */}

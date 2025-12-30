@@ -1,6 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
-import { prisma } from './prisma.db';
+import { prisma, RoleType } from './prisma.db';
 
 const isPublicRoute = createRouteMatcher([
 	'/',
@@ -26,7 +26,10 @@ export default clerkMiddleware(async (auth, req) => {
 			const dbUser = await prisma.user.findUnique({
 				where: { clerkUserId: userId },
 			});
-			if (!dbUser || dbUser.role !== 'ADMIN') {
+			if (
+				!dbUser ||
+				(dbUser.role !== RoleType.ADMIN && dbUser.role !== RoleType.SUPER_ADMIN)
+			) {
 				return NextResponse.redirect(new URL('/dashboard', req.url));
 			}
 		} catch {
