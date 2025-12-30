@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import type { Part, Supplier, InventoryTransaction, User as DbUser } from '@prisma/client'
 import { Package, AlertTriangle, TrendingUp, Plus, Search, Download, BarChart3, Building, DollarSignIcon, ToolCaseIcon, Eye, User2 } from 'lucide-react'
@@ -11,6 +12,7 @@ import TransactionHistory from './transaction-history'
 import PartsForm from './parts-form'
 import SupplierForm from './supplier-form'
 import RolesTab from './role-tab'
+import { showSuccessToast } from '@/app/_lib/utils/toast'
 // NOTE: Don't import server-only Clerk APIs into this client component.
 // Use the client-side API endpoint `GET /api/auth/me` instead.
 
@@ -43,6 +45,8 @@ export default function InventoryDashboard({
 
   const [dbUser, setDbUser] = useState<DbUser | null>(null)
 
+  const route = useRouter();
+
   useEffect(() => {
     fetch('/api/auth/me')
       .then(async (res) => {
@@ -73,14 +77,14 @@ export default function InventoryDashboard({
 
   const handleAddPartSuccess = () => {
     setShowPartsForm(false)
-    // In a real app, you would refresh the data here
-    window.location.reload()
+    showSuccessToast("Part added successfully");
+    return route.refresh();
   }
 
   const handleAddSupplierSuccess = () => {
     setShowSupplierForm(false)
-    // In a real app, you would refresh the data here
-    window.location.reload()
+    showSuccessToast("Supplier added successfully");
+    return route.refresh();
   }
 
   return (
