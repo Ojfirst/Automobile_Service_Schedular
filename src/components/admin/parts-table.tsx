@@ -3,10 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { useAutoRevalidate } from '@/app/_lib/hooks/use-auto-revalidate';
 import { useState } from 'react'
-
 import type { Part, Supplier } from '@prisma/client'
 import { Package, AlertTriangle, Edit2, ExternalLink, MoreVertical } from 'lucide-react';
-
 import { renderPartsForm } from './parts/render_parts_form';
 
 

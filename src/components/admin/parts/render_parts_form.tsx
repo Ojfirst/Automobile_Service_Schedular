@@ -6,7 +6,6 @@ import type { Supplier } from "@prisma/client";
 
 // Render form when requested
 
-
 export const renderPartsForm = (showPartsForm: boolean, setShowPartsForm: (show: boolean) => void, editingPart: PartWithDetails | null, setEditingPart: (part: PartWithDetails | null) => void, editSuppliers: Supplier[]) => {
   if (!showPartsForm) return null;
 

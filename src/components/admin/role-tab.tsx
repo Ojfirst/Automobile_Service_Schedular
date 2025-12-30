@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { toast } from "sonner";
+import { showSuccessToast, showErrorToast } from "@/app/_lib/utils/toast";
 import { RoleType } from "@/prisma.db";
 
 interface User {
@@ -27,7 +27,7 @@ export default function RolesTab({ }: RolesTabProps) {
         setUsers(data.users);
       } catch (err) {
         console.error(err, 'Failed to fetch user')
-        toast.error("Failed to fetch users");
+        showErrorToast("Failed to fetch users");
       } finally {
         setLoading(false);
       }
@@ -43,16 +43,22 @@ export default function RolesTab({ }: RolesTabProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ role: newRole }),
       });
+
+      const error = await res.json();
+
+      if (res.status === 400) {
+        showErrorToast(error.message);
+        return;
+      }
+
       if (res.ok) {
         setUsers((prev) =>
           prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
         );
-        toast.success("Role updated");
-      } else {
-        toast.error("Failed to update role");
+        showSuccessToast("Role successfully updated");
       }
-    } catch {
-      toast.error("Failed to update role");
+    } catch (err) {
+      showErrorToast(err instanceof Error ? err.message : "Failed to update role");
     } finally {
       setLoading(false);
     }
