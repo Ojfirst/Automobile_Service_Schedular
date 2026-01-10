@@ -5,6 +5,7 @@ import InventoryStats from '@/components/admin/inventory-stats';
 import { LoadingInventory } from '@/app/_lib/utils/loadingInventory';
 import { getInventoryData } from '@/app/_lib/utils/get-inventry-data';
 import { requireAdminAuth } from '@/app/_lib/auth/admin-auth';
+import { InventoryStat } from '../../../../types/inventory';
 
 export const metadata = {
   title: 'Inventory Management - AutoCare Pro',
@@ -14,25 +15,37 @@ export const metadata = {
 export default async function InventoryPage() {
   await requireAdminAuth()
 
-  const data = await getInventoryData()
+
+  const data = await getInventoryData();
 
   // Calculate inventory statistics
-  const inventoryValue = data.parts.reduce((sum, part) => sum + (part.stock * part.cost), 0)
-  const retailValue = data.parts.reduce((sum, part) => sum + (part.stock * part.price), 0)
+  const inventoryValue = data.parts.reduce<number>(
+    (sum, part) => sum + Number(part.stock) * Number(part.cost),
+    0
+  )
+  const retailValue = data.parts.reduce<number>(
+    (sum, part) => sum + Number(part.stock) * Number(part.price),
+    0
+  )
   const totalParts = data.parts.length
   const outOfStock = data.parts.filter(p => p.stock === 0).length
   const lowStock = data.lowStockParts.length
 
-  const stats = {
-    inventoryValue,
-    retailValue,
+  const stats: InventoryStat = {
+    inventoryValue: Number(inventoryValue),
+    retailValue: Number(retailValue),
     totalParts,
     outOfStock,
     lowStock,
     totalSuppliers: data.suppliers.length,
-    potentialProfit: retailValue - inventoryValue,
-    avgMargin: retailValue > 0 ? ((retailValue - inventoryValue) / retailValue) * 100 : 0,
+    potentialProfit: Number(retailValue - inventoryValue),
+    avgMargin: Number(
+      retailValue > 0
+        ? ((retailValue - inventoryValue) / retailValue) * 100
+        : 0
+    ),
   }
+
 
   return (
     <div className="min-h-screen flex">
@@ -71,7 +84,7 @@ export default async function InventoryPage() {
             lowStockParts={data.lowStockParts}
             recentTransactions={data.recentTransactions}
             suppliers={data.suppliers}
-            stats={stats}
+          // stats={stats}
           />
         </Suspense>
       </main>
