@@ -14,7 +14,7 @@ export default async function Home() {
           Book your automobile service appointments quickly and easily.
           From oil changes to major repairs, we&apos;ve got you covered.
         </p>
-        <div className="space-x-4">
+        <div className="flex flex-wrap items-center justify-center gap-4 m-8 space-x-4">
           <SignedOut>
             <Link
               href={"/sign-in"}
