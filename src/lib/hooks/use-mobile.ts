@@ -1,32 +1,24 @@
-import { addAbortListener } from 'events';
+'use client';
+
 import { useEffect, useState } from 'react';
 
-type sizeProps = {
-	mobileSize: number;
-	initialSize: boolean;
-};
-
-const MOBILE_DEVICE_BREAKE_POINT = 750;
+const MOBILE_DEVICE_BREAKPOINT = 750;
 
 const useMobile = (): boolean => {
-	const getInitialSize = (): boolean => {
-		return typeof window.innerWidth !== 'undefined'
-			? window.innerWidth < MOBILE_DEVICE_BREAKE_POINT
+	const getInitialSize = () =>
+		typeof window !== 'undefined'
+			? window.innerWidth < MOBILE_DEVICE_BREAKPOINT
 			: false;
-	};
 
-	const [isMobile, setIsMobile] = useState<boolean>(getInitialSize);
+	const [isMobile, setIsMobile] = useState(getInitialSize);
 
 	useEffect(() => {
 		const handleResize = () => {
-			setIsMobile(window.innerWidth < MOBILE_DEVICE_BREAKE_POINT);
+			setIsMobile(window.innerWidth < MOBILE_DEVICE_BREAKPOINT);
 		};
 
-		handleResize();
-
 		window.addEventListener('resize', handleResize);
-
-		return window.removeEventListener('resize', handleResize);
+		return () => window.removeEventListener('resize', handleResize);
 	}, []);
 
 	return isMobile;
