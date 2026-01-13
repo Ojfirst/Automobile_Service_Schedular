@@ -19,7 +19,7 @@ const NavBar = () => {
         <div className="flex items-center justify-between">
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3">
+          <Link href="/" className="flex flex-wrap items-center gap-3">
             <div className="p-2 bg-blue-500 rounded-lg">
               <svg
                 className="w-6 h-6 text-white"
